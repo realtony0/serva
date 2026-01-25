@@ -1,0 +1,84 @@
+rules_version = '2';
+
+/**
+ * Règles de sécurité Firestore pour SERVA
+ */
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ============================================
+    // RESTAURANTS
+    // ============================================
+    match /restaurants/{restaurantId} {
+      allow read: if true;
+      allow create, update, delete: if true; // Temporaire pour setup
+    }
+
+    // ============================================
+    // TABLES
+    // ============================================
+    match /tables/{tableId} {
+      allow read: if true;
+      allow create, update, delete: if true; // Temporaire pour setup
+    }
+
+    // ============================================
+    // USER PROFILES
+    // ============================================
+    match /user_profiles/{userId} {
+      allow read: if true;
+      allow create, update, delete: if true; // Temporaire pour setup
+    }
+
+    // ============================================
+    // MENU - CATEGORIES
+    // ============================================
+    match /menu_categories/{categoryId} {
+      allow read: if true;
+      allow create, update, delete: if true; // Temporaire pour setup
+    }
+
+    // ============================================
+    // MENU - TYPES
+    // ============================================
+    match /menu_types/{typeId} {
+      allow read: if true;
+      allow create, update, delete: if true; // Temporaire pour setup
+    }
+
+    // ============================================
+    // MENU - PRODUCTS
+    // ============================================
+    match /menu_products/{productId} {
+      allow read: if true;
+      allow create, update, delete: if true; // Temporaire pour setup
+    }
+
+    // ============================================
+    // ORDERS (COMMANDES)
+    // ============================================
+    match /orders/{orderId} {
+      allow read: if true;
+      allow create: if 
+        request.resource.data.keys().hasAll(['restaurantId', 'tableId', 'items', 'total', 'status', 'createdAt', 'updatedAt'])
+        && request.resource.data.restaurantId is string
+        && request.resource.data.restaurantId.size() > 0
+        && request.resource.data.tableId is string
+        && request.resource.data.tableId.size() > 0
+        && request.resource.data.items is list
+        && request.resource.data.items.size() > 0
+        && request.resource.data.total is number
+        && request.resource.data.total >= 0
+        && request.resource.data.status == "pending";
+      allow update, delete: if true; // Temporaire pour setup
+    }
+
+    // ============================================
+    // RÈGLE PAR DÉFAUT - Autoriser lecture/écriture pour le dev
+    // ============================================
+    match /{document=**} {
+      allow read, write: if true; // Temporaire pour setup
+    }
+  }
+}
