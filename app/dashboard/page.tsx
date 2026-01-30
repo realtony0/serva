@@ -126,7 +126,6 @@ function DashboardContent() {
             </div>
           </Link>
         </div>
-        </div>
       </main>
     </div>
   );

@@ -106,8 +106,10 @@ export default function Dish3DScene({ imageUrl, model3DUrl }: Dish3DSceneProps) 
 	useEffect(() => {
 		if (!mounted || !mountRef.current) return;
 
-		const width = mountRef.current.clientWidth;
-		const height = mountRef.current.clientHeight;
+		// Capturer la référence pour le cleanup
+		const mountElement = mountRef.current;
+		const width = mountElement.clientWidth;
+		const height = mountElement.clientHeight;
 
 		// Scène
 		const scene = new THREE.Scene();
@@ -121,7 +123,7 @@ export default function Dish3DScene({ imageUrl, model3DUrl }: Dish3DSceneProps) 
 		const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 		renderer.setSize(width, height);
 		renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-		mountRef.current.appendChild(renderer.domElement);
+		mountElement.appendChild(renderer.domElement);
 
 		// Éclairage professionnel
 		const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
@@ -263,8 +265,8 @@ export default function Dish3DScene({ imageUrl, model3DUrl }: Dish3DSceneProps) 
 			if (animationId) {
 				cancelAnimationFrame(animationId);
 			}
-			if (mountRef.current && renderer.domElement) {
-				mountRef.current.removeChild(renderer.domElement);
+			if (mountElement && renderer.domElement && mountElement.contains(renderer.domElement)) {
+				mountElement.removeChild(renderer.domElement);
 			}
 			if (controls) {
 				controls.dispose();

@@ -48,26 +48,9 @@ const DishPhoto3D: React.FC<{
 }> = ({ imagePath, fallbackPath, rotationSpeed = 0.3 }) => {
 	const frame = useCurrentFrame();
 	
-	// Essayer de charger la texture principale, sinon fallback
-	let texture: THREE.Texture;
-	try {
-		texture = useLoader(THREE.TextureLoader, imagePath);
-	} catch {
-		try {
-			texture = useLoader(THREE.TextureLoader, fallbackPath || imagePath);
-		} catch {
-			// Si aucune image n'est disponible, créer une texture de couleur
-			const canvas = document.createElement("canvas");
-			canvas.width = 512;
-			canvas.height = 512;
-			const ctx = canvas.getContext("2d");
-			if (ctx) {
-				ctx.fillStyle = "#8B4513";
-				ctx.fillRect(0, 0, 512, 512);
-			}
-			texture = new THREE.CanvasTexture(canvas);
-		}
-	}
+	// Charger la texture principale (useLoader doit toujours être appelé)
+	// On utilise useLoader de manière inconditionnelle et gérons les erreurs dans le composant
+	const texture = useLoader(THREE.TextureLoader, imagePath);
 
 	// Rotation automatique
 	const rotationY = (frame * rotationSpeed) / fps;
