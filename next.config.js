@@ -18,30 +18,6 @@ const nextConfig = {
     NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
     NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
   },
-  // Configuration webpack pour Three.js
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        path: false,
-        crypto: false,
-      };
-    }
-    
-    // Configuration pour Three.js et React Three Fiber
-    config.resolve.alias = {
-      ...config.resolve.alias,
-    };
-    
-    // Ignorer les warnings de source maps pour Three.js
-    config.ignoreWarnings = [
-      { module: /node_modules\/three/ },
-      { module: /node_modules\/@react-three/ },
-    ];
-    
-    return config;
-  },
   // Configuration PWA
   async headers() {
     return [

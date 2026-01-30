@@ -9,7 +9,6 @@ import {
 } from "remotion";
 import { Intro } from "./Scenes/Intro";
 import { Features } from "./Scenes/Features";
-import { Dishes3D } from "./Scenes/Dishes3D";
 import { ClientDemo } from "./Scenes/ClientDemo";
 import { KitchenDemo } from "./Scenes/KitchenDemo";
 import { StatsDemo } from "./Scenes/StatsDemo";
@@ -23,7 +22,6 @@ export const ServaVideo: React.FC = () => {
 	// Durées des scènes (en frames)
 	const introDuration = fps * 5; // 5 secondes
 	const featuresDuration = fps * 12; // 12 secondes
-	const dishes3DDuration = fps * 12; // 12 secondes (3 plats x 4 secondes)
 	const clientDemoDuration = fps * 15; // 15 secondes
 	const kitchenDemoDuration = fps * 12; // 12 secondes
 	const statsDemoDuration = fps * 10; // 10 secondes
@@ -32,8 +30,7 @@ export const ServaVideo: React.FC = () => {
 	// Positions de début de chaque scène
 	const introStart = 0;
 	const featuresStart = introStart + introDuration;
-	const dishes3DStart = featuresStart + featuresDuration;
-	const clientDemoStart = dishes3DStart + dishes3DDuration;
+	const clientDemoStart = featuresStart + featuresDuration;
 	const kitchenDemoStart = clientDemoStart + clientDemoDuration;
 	const statsDemoStart = kitchenDemoStart + kitchenDemoDuration;
 	const outroStart = statsDemoStart + statsDemoDuration;
@@ -48,11 +45,6 @@ export const ServaVideo: React.FC = () => {
 			{/* Features */}
 			<Sequence from={featuresStart} durationInFrames={featuresDuration}>
 				<Features />
-			</Sequence>
-
-			{/* Dishes 3D */}
-			<Sequence from={dishes3DStart} durationInFrames={dishes3DDuration}>
-				<Dishes3D />
 			</Sequence>
 
 			{/* Client Demo */}

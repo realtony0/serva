@@ -8,7 +8,6 @@ import { useState, useMemo } from "react";
 import { Category, MenuType, Product } from "@/lib/types/menu";
 import { Button } from "@/components/ui/Button";
 import ProductOptionsModal from "./ProductOptionsModal";
-import Dish3DViewer from "./Dish3DViewer";
 import { getCategoryIcon } from "@/lib/utils/category-icons";
 
 interface MenuDisplayProps {
@@ -204,7 +203,6 @@ function ProductCard({
   categories: Category[];
 }) {
   const [showOptionsModal, setShowOptionsModal] = useState(false);
-  const [show3DViewer, setShow3DViewer] = useState(false);
 
   // Trouver les catégories d'accompagnements et sauces
   const accompagnementsCategory = categories.find(c => c.name.toLowerCase().includes('accompagnement'));
@@ -246,24 +244,12 @@ function ProductCard({
             <img
               src={product.imageUrl}
               alt={product.name}
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 cursor-pointer"
-              onClick={() => setShow3DViewer(true)}
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
               onError={(e) => {
                 (e.target as HTMLImageElement).style.display = "none";
               }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            {/* Bouton vue 3D */}
-            <button
-              onClick={() => setShow3DViewer(true)}
-              className="absolute top-2 right-2 bg-black/70 hover:bg-black/90 text-white px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm"
-              title="Voir en 3D"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
-              </svg>
-              Vue 3D
-            </button>
           </div>
         ) : (
           <div className="aspect-video w-full bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
@@ -327,15 +313,6 @@ function ProductCard({
           isOpen={showOptionsModal}
           onClose={() => setShowOptionsModal(false)}
           onConfirm={handleConfirmOptions}
-        />
-      )}
-
-      {show3DViewer && product.imageUrl && (
-        <Dish3DViewer
-          imageUrl={product.imageUrl}
-          isOpen={show3DViewer}
-          onClose={() => setShow3DViewer(false)}
-          dishName={product.name}
         />
       )}
     </>
