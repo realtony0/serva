@@ -20,6 +20,7 @@ import { getRestaurantById } from "@/services/restaurant-service";
 import { Table } from "@/lib/types/table";
 import { Restaurant } from "@/lib/types/restaurant";
 import { QRCodeSVG } from "qrcode.react";
+import { getBaseUrl } from "@/lib/utils/url";
 
 function QRCodePageContent() {
   const params = useParams();
@@ -71,7 +72,7 @@ function QRCodePageContent() {
 
     try {
       setGenerating(true);
-      const baseUrl = window.location.origin;
+      const baseUrl = getBaseUrl();
       await createTablesForRestaurant(restaurantId, numberOfTables, baseUrl);
       await loadData(); // Recharger les tables
       alert(`${numberOfTables} tables créées avec succès !`);

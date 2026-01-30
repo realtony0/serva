@@ -102,7 +102,8 @@ function RestaurantsContent() {
     try {
       setGeneratingForId(restaurantId);
       const { createTablesForRestaurant } = await import("@/services/table-service");
-      const baseUrl = window.location.origin;
+      const { getBaseUrl } = await import("@/lib/utils/url");
+      const baseUrl = getBaseUrl();
       await createTablesForRestaurant(restaurantId, numberOfTables, baseUrl);
       setSuccess("QR codes générés avec succès !");
       setTimeout(() => setSuccess(""), 3000);

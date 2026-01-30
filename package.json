@@ -6,14 +6,24 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "remotion": "remotion studio",
+    "remotion:render": "remotion render ServaVideo out/video.mp4",
+    "remotion:gif": "remotion render ServaVideo out/video.gif"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.5.0",
+    "@remotion/cli": "^4.0.409",
+    "@remotion/lottie": "^4.0.409",
+    "@remotion/paths": "^4.0.409",
     "firebase": "^10.12.2",
     "next": "^14.2.5",
     "qrcode.react": "^4.2.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.409",
+    "three": "^0.182.0"
   },
   "devDependencies": {
     "@types/node": "^20.14.10",

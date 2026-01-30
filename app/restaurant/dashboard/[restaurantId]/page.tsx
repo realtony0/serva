@@ -43,6 +43,7 @@ import {
   markNotificationAsRead, 
   RestaurantNotification 
 } from "@/services/notification-service";
+import { getBaseUrl } from "@/lib/utils/url";
 
 type Tab = "orders" | "qrcodes" | "statistics" | "menu" | "notifications";
 
@@ -417,7 +418,7 @@ function RestaurantDashboardContent() {
 
     try {
       setGeneratingTables(true);
-      const baseUrl = window.location.origin;
+      const baseUrl = getBaseUrl();
       await createTablesForRestaurant(restaurantId, numberOfTables, baseUrl);
       await loadTables();
       setSuccess(`${numberOfTables} tables créées avec succès !`);
