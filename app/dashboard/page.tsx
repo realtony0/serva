@@ -69,7 +69,7 @@ function DashboardContent() {
         </div>
 
         {/* Cards Section */}
-        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2">
+        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <Link href="/dashboard/restaurants">
             <div className="rounded-lg bg-white p-6 shadow hover:shadow-lg transition-shadow cursor-pointer border-2 border-blue-100">
               <div className="flex items-center gap-3 mb-3">
@@ -122,6 +122,33 @@ function DashboardContent() {
               </div>
               <p className="text-sm text-gray-600">
                 Consultez les performances globales de la plateforme et le chiffre d&apos;affaires total.
+              </p>
+            </div>
+          </Link>
+          <Link href="/dashboard/inscriptions">
+            <div className="rounded-lg bg-white p-6 shadow hover:shadow-lg transition-shadow cursor-pointer border-2 border-green-100">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
+                  <svg
+                    className="h-6 w-6 text-green-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Demandes d&apos;inscription
+                </h3>
+              </div>
+              <p className="text-sm text-gray-600">
+                Consultez et gérez les demandes d&apos;inscription des restaurants.
               </p>
             </div>
           </Link>

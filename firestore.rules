@@ -308,6 +308,36 @@ service cloud.firestore {
     }
 
     // ============================================
+    // REGISTRATION REQUESTS (demandes d'inscription)
+    // ============================================
+    match /registration_requests/{requestId} {
+      // Lecture : uniquement les admins
+      allow read: if isAdmin();
+
+      // Création : tout le monde (formulaire public, sans auth)
+      allow create: if
+        request.resource.data.keys().hasAll(['restaurantName', 'ownerName', 'email', 'phone', 'city', 'estimatedTables', 'status', 'createdAt', 'updatedAt'])
+        && request.resource.data.restaurantName is string
+        && request.resource.data.restaurantName.size() > 0
+        && request.resource.data.ownerName is string
+        && request.resource.data.ownerName.size() > 0
+        && request.resource.data.email is string
+        && request.resource.data.email.size() > 0
+        && request.resource.data.phone is string
+        && request.resource.data.phone.size() >= 8
+        && request.resource.data.estimatedTables is number
+        && request.resource.data.estimatedTables >= 1
+        && request.resource.data.estimatedTables <= 500
+        && request.resource.data.status == "pending";
+
+      // Modification : uniquement les admins (changer le statut)
+      allow update: if isAdmin();
+
+      // Suppression : uniquement les admins
+      allow delete: if isAdmin();
+    }
+
+    // ============================================
     // RÈGLE PAR DÉFAUT — Tout bloquer
     // ============================================
     match /{document=**} {

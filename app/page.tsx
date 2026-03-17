@@ -17,14 +17,19 @@ export default function Home() {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
-          <Link href="/login">
+          <Link href="/inscription">
             <Button variant="primary" size="lg" className="w-full sm:w-auto">
-              Connexion Admin
+              Inscrire mon restaurant
             </Button>
           </Link>
           <Link href="/restaurant/login">
             <Button variant="outline" size="lg" className="w-full sm:w-auto">
               Connexion Restaurant
+            </Button>
+          </Link>
+          <Link href="/login">
+            <Button variant="outline" size="lg" className="w-full sm:w-auto">
+              Admin
             </Button>
           </Link>
         </div>
