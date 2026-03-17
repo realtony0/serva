@@ -11,6 +11,7 @@ import {
   onCollectionChange,
 } from "@/lib/firestore";
 import { ServiceRequest, ServiceRequestType } from "@/lib/types/service-request";
+import { validateId, validateServiceRequestType } from "@/lib/validation";
 
 const COLLECTION = "service_requests";
 
@@ -23,6 +24,14 @@ export async function createServiceRequest(
   tableNumber: number,
   type: ServiceRequestType
 ): Promise<string> {
+  // Validation des données
+  validateId(restaurantId, "L'ID du restaurant");
+  validateId(tableId, "L'ID de la table");
+  validateServiceRequestType(type);
+  if (typeof tableNumber !== "number" || !Number.isInteger(tableNumber) || tableNumber < 1) {
+    throw new Error("Le numéro de table est invalide");
+  }
+
   const id = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   const now = new Date().toISOString();
 

@@ -5,6 +5,13 @@
 import { setDocument } from "@/lib/firestore";
 import { Order } from "@/lib/types/order";
 import { CartItem } from "@/lib/types/cart";
+import {
+  validateId,
+  validatePrice,
+  validateQuantity,
+  validateName,
+  sanitizeString,
+} from "@/lib/validation";
 
 const COLLECTIONS = {
   ORDERS: "orders",
@@ -18,38 +25,24 @@ function validateOrderData(
   tableId: string,
   items: CartItem[]
 ): void {
-  if (!restaurantId || restaurantId.trim() === "") {
-    throw new Error("L'ID du restaurant est requis");
-  }
+  validateId(restaurantId, "L'ID du restaurant");
+  validateId(tableId, "L'ID de la table");
 
-  if (!tableId || tableId.trim() === "") {
-    throw new Error("L'ID de la table est requis");
-  }
-
-  if (!items || items.length === 0) {
+  if (!Array.isArray(items) || items.length === 0) {
     throw new Error("Le panier ne peut pas être vide");
   }
 
-  // Vérifier que tous les items ont les champs requis
+  if (items.length > 50) {
+    throw new Error("Maximum 50 articles par commande");
+  }
+
   for (const item of items) {
-    if (!item.productId || item.productId.trim() === "") {
-      throw new Error("Un produit a un ID invalide");
-    }
-    if (!item.name || item.name.trim() === "") {
-      throw new Error("Un produit a un nom invalide");
-    }
-    if (typeof item.price !== "number" || item.price < 0) {
-      throw new Error("Un produit a un prix invalide");
-    }
-    if (typeof item.quantity !== "number" || item.quantity <= 0) {
-      throw new Error("Un produit a une quantité invalide");
-    }
-    if (!item.categoryId || item.categoryId.trim() === "") {
-      throw new Error("Un produit a une catégorie invalide");
-    }
-    if (!item.typeId || item.typeId.trim() === "") {
-      throw new Error("Un produit a un type invalide");
-    }
+    validateId(item.productId, "L'ID du produit");
+    validateName(item.name, "Le nom du produit");
+    validatePrice(item.price, "Le prix du produit");
+    validateQuantity(item.quantity, "La quantité");
+    validateId(item.categoryId, "L'ID de la catégorie");
+    validateId(item.typeId, "L'ID du type");
   }
 }
 

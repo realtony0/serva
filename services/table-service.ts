@@ -14,6 +14,7 @@ import {
 } from "@/lib/firestore";
 import { Table } from "@/lib/types/table";
 import { getBaseUrl } from "@/lib/utils/url";
+import { validateId, validateTableCount } from "@/lib/validation";
 
 const COLLECTIONS = {
   TABLES: "tables",
@@ -50,9 +51,13 @@ export async function createTablesForRestaurant(
   numberOfTables: number,
   baseUrl?: string
 ): Promise<Table[]> {
+  // Validation des données
+  validateId(restaurantId, "L'ID du restaurant");
+  validateTableCount(numberOfTables);
+
   const tables: Table[] = [];
   const now = new Date().toISOString();
-  
+
   // Utiliser l'URL fournie, ou obtenir l'URL de base automatiquement
   const finalBaseUrl = baseUrl || getBaseUrl();
 

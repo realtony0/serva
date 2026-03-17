@@ -16,6 +16,7 @@ import {
 import { Restaurant, RestaurantFormData } from "@/lib/types/restaurant";
 import { getCurrentUser } from "@/lib/firebase-auth";
 import { COLLECTIONS } from "@/lib/types/firestore-collections";
+import { validateId, validateName, validateUrl, sanitizeString } from "@/lib/validation";
 
 const RESTAURANTS_COLLECTION = COLLECTIONS.RESTAURANTS;
 
@@ -49,20 +50,25 @@ export async function createRestaurant(
   data: RestaurantFormData,
   ownerId?: string // ID de l'utilisateur propriétaire (optionnel)
 ): Promise<string> {
+  // Validation des données
+  const name = validateName(data.name, "Le nom du restaurant");
+  const description = sanitizeString(data.description || "");
+  const logoUrl = validateUrl(data.logoUrl, "L'URL du logo");
+
   const user = getCurrentUser();
   const restaurantId = `restaurant_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   const now = new Date().toISOString();
 
   const restaurant: Restaurant = {
     id: restaurantId,
-    name: data.name,
-    description: data.description,
-    logoUrl: data.logoUrl,
+    name,
+    description,
+    logoUrl,
     createdAt: now,
     updatedAt: now,
     createdBy: user?.uid || undefined,
-    ownerId: ownerId || undefined, // ID du propriétaire pour la connexion
-    email: data.ownerEmail || undefined, // Email du propriétaire (pour référence)
+    ownerId: ownerId || undefined,
+    email: data.ownerEmail || undefined,
   };
 
   await setDocument(RESTAURANTS_COLLECTION, restaurantId, restaurant);
