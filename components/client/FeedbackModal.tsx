@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { createFeedback } from "@/services/feedback-service";
+import { useToast } from "@/components/ui/Toast";
 
 interface FeedbackModalProps {
   restaurantId: string;
@@ -14,6 +15,7 @@ export default function FeedbackModal({ restaurantId, onClose }: FeedbackModalPr
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +29,7 @@ export default function FeedbackModal({ restaurantId, onClose }: FeedbackModalPr
       setIsSuccess(true);
       setTimeout(onClose, 2000);
     } catch (err) {
-      alert("Erreur lors de l'envoi de l'avis");
+      toast.error("Erreur lors de l'envoi de l'avis");
     } finally {
       setIsSubmitting(false);
     }

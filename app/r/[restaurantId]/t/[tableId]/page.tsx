@@ -7,7 +7,7 @@
  * Affiche le menu du restaurant avec filtres et panier
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 import {
   getRestaurantData,
@@ -25,6 +25,8 @@ import RestaurantHeader from "@/components/client/RestaurantHeader";
 import OrderStatusNotification from "@/components/client/OrderStatusNotification";
 import FeedbackModal from "@/components/client/FeedbackModal";
 import { createNotification } from "@/services/notification-service";
+import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmModal";
 
 export default function ClientPage() {
   const params = useParams();
@@ -42,6 +44,8 @@ export default function ClientPage() {
   const [isRequestingBill, setIsRequestingBill] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [language, setLanguage] = useState<"fr" | "en">("fr");
+  const { toast } = useToast();
+  const { confirm } = useConfirm();
 
   // Charger les données au montage
   useEffect(() => {
@@ -172,11 +176,15 @@ export default function ClientPage() {
     );
   };
 
-  const clearCart = () => {
-    if (confirm("Voulez-vous vider le panier ?")) {
+  const clearCart = useCallback(async () => {
+    const ok = await confirm("Voulez-vous vider le panier ?", {
+      confirmText: "Vider",
+      variant: "danger",
+    });
+    if (ok) {
       setCart([]);
     }
-  };
+  }, [confirm]);
 
   const getTotalPrice = () => {
     return cart.reduce((total, item) => {
@@ -206,9 +214,10 @@ export default function ClientPage() {
       setIsCallingWaiter(true);
       const tableNumber = parseInt(tableId.split('_').pop() || "0");
       await createServiceRequest(restaurantId, tableId, tableNumber, "server");
-      alert("🛎️ Un serveur a été appelé. Il arrive bientôt !");
-    } catch (err: any) {
-      alert("Erreur: " + err.message);
+      toast.success("Un serveur a été appelé. Il arrive bientôt !");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Erreur inconnue";
+      toast.error(`Erreur : ${message}`);
     } finally {
       setIsCallingWaiter(false);
     }
@@ -219,9 +228,10 @@ export default function ClientPage() {
       setIsRequestingBill(true);
       const tableNumber = parseInt(tableId.split('_').pop() || "0");
       await createServiceRequest(restaurantId, tableId, tableNumber, "bill");
-      alert("🧾 Votre demande d'addition a été envoyée.");
-    } catch (err: any) {
-      alert("Erreur: " + err.message);
+      toast.success("Votre demande d'addition a été envoyée.");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Erreur inconnue";
+      toast.error(`Erreur : ${message}`);
     } finally {
       setIsRequestingBill(false);
     }

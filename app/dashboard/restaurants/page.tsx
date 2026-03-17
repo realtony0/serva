@@ -18,6 +18,8 @@ import {
 } from "@/services/restaurant-service";
 import { Restaurant, RestaurantFormData } from "@/lib/types/restaurant";
 import Link from "next/link";
+import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmModal";
 
 function RestaurantsContent() {
   const { user } = useAuth();
@@ -28,6 +30,8 @@ function RestaurantsContent() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [generatingForId, setGeneratingForId] = useState<string | null>(null);
+  const { toast } = useToast();
+  const { confirm } = useConfirm();
 
   // Formulaire
   const [formData, setFormData] = useState<RestaurantFormData>({
@@ -95,7 +99,7 @@ function RestaurantsContent() {
 
   const handleGenerateQRCodes = async (restaurantId: string, numberOfTables: number) => {
     if (numberOfTables <= 0) {
-      alert("Ce restaurant n'a pas de tables configurées.");
+      toast.warning("Ce restaurant n'a pas de tables configurées.");
       return;
     }
 
@@ -105,26 +109,30 @@ function RestaurantsContent() {
       const { getBaseUrl } = await import("@/lib/utils/url");
       const baseUrl = getBaseUrl();
       await createTablesForRestaurant(restaurantId, numberOfTables, baseUrl);
-      setSuccess("QR codes générés avec succès !");
-      setTimeout(() => setSuccess(""), 3000);
-    } catch (err: any) {
-      setError("Erreur lors de la génération: " + err.message);
+      toast.success("QR codes générés avec succès !");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Erreur inconnue";
+      toast.error(`Erreur lors de la génération : ${message}`);
     } finally {
       setGeneratingForId(null);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer ce restaurant ?")) {
-      return;
-    }
+    const ok = await confirm("Êtes-vous sûr de vouloir supprimer ce restaurant ?", {
+      title: "Supprimer le restaurant",
+      confirmText: "Supprimer",
+      variant: "danger",
+    });
+    if (!ok) return;
 
     try {
       await deleteRestaurant(id);
-      setSuccess("Restaurant supprimé avec succès !");
-      await loadRestaurants(); // Recharger la liste
-    } catch (err: any) {
-      setError("Erreur lors de la suppression: " + err.message);
+      toast.success("Restaurant supprimé avec succès !");
+      await loadRestaurants();
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Erreur inconnue";
+      toast.error(`Erreur lors de la suppression : ${message}`);
     }
   };
 

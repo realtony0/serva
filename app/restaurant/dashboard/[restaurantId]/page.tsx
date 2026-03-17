@@ -12,6 +12,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmModal";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Button } from "@/components/ui/Button";
 import {
@@ -76,6 +78,8 @@ function RestaurantDashboardContent() {
   const [generatingTables, setGeneratingTables] = useState(false);
   const [deletingTableId, setDeletingTableId] = useState<string | null>(null);
   const [notifications, setNotifications] = useState<RestaurantNotification[]>([]);
+  const { toast } = useToast();
+  const { confirm } = useConfirm();
   
   // Notifications
   const seenOrderIds = useRef<Set<string>>(new Set());
@@ -291,16 +295,18 @@ function RestaurantDashboardContent() {
       } else {
         await markAsReady(orderId);
       }
-    } catch (err: any) {
-      alert("Erreur lors de la mise à jour: " + err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Erreur inconnue";
+      toast.error(`Erreur lors de la mise à jour : ${message}`);
     }
   };
 
   const handleHandleRequest = async (requestId: string) => {
     try {
       await markRequestAsHandled(requestId);
-    } catch (err: any) {
-      alert("Erreur: " + err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Erreur inconnue";
+      toast.error(`Erreur : ${message}`);
     }
   };
 
@@ -412,7 +418,7 @@ function RestaurantDashboardContent() {
 
   const handleGenerateTables = async () => {
     if (numberOfTables <= 0 || numberOfTables > 100) {
-      alert("Le nombre de tables doit être entre 1 et 100");
+      toast.warning("Le nombre de tables doit être entre 1 et 100");
       return;
     }
 
@@ -421,25 +427,32 @@ function RestaurantDashboardContent() {
       const baseUrl = getBaseUrl();
       await createTablesForRestaurant(restaurantId, numberOfTables, baseUrl);
       await loadTables();
-      setSuccess(`${numberOfTables} tables créées avec succès !`);
+      toast.success(`${numberOfTables} tables créées avec succès !`);
       setNumberOfTables(10);
-    } catch (err: any) {
-      setError("Erreur lors de la création: " + err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Erreur inconnue";
+      toast.error(`Erreur lors de la création : ${message}`);
     } finally {
       setGeneratingTables(false);
     }
   };
 
   const handleDeleteTable = async (tableId: string) => {
-    if (!confirm("Supprimer cette table et son QR code ?")) return;
+    const ok = await confirm("Supprimer cette table et son QR code ?", {
+      title: "Supprimer la table",
+      confirmText: "Supprimer",
+      variant: "danger",
+    });
+    if (!ok) return;
 
     try {
       setDeletingTableId(tableId);
       await deleteTable(tableId);
       await loadTables();
-      setSuccess("Table supprimée avec succès !");
-    } catch (err: any) {
-      setError("Erreur lors de la suppression: " + err.message);
+      toast.success("Table supprimée avec succès !");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Erreur inconnue";
+      toast.error(`Erreur lors de la suppression : ${message}`);
     } finally {
       setDeletingTableId(null);
     }

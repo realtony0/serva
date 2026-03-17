@@ -8,7 +8,7 @@
  * Affiche le menu du restaurant avec filtres et panier
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   getRestaurantData,
@@ -23,6 +23,8 @@ import MenuDisplay from "@/components/client/MenuDisplay";
 import Cart from "@/components/client/Cart";
 import RestaurantHeader from "@/components/client/RestaurantHeader";
 import OrderStatusNotification from "@/components/client/OrderStatusNotification";
+import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmModal";
 
 export default function ClientPage() {
   const params = useParams();
@@ -38,6 +40,8 @@ export default function ClientPage() {
   const [error, setError] = useState("");
   const [tableId, setTableId] = useState<string>("");
   const [showTableInput, setShowTableInput] = useState(true);
+  const { toast } = useToast();
+  const { confirm } = useConfirm();
 
   // Générer ou récupérer le tableId
   useEffect(() => {
@@ -140,7 +144,7 @@ export default function ClientPage() {
 
   const addToCart = (product: Product) => {
     if (!tableId) {
-      alert("Veuillez d'abord saisir votre numéro de table");
+      toast.warning("Veuillez d'abord saisir votre numéro de table");
       return;
     }
 
@@ -191,11 +195,15 @@ export default function ClientPage() {
     );
   };
 
-  const clearCart = () => {
-    if (confirm("Voulez-vous vider le panier ?")) {
+  const clearCart = useCallback(async () => {
+    const ok = await confirm("Voulez-vous vider le panier ?", {
+      confirmText: "Vider",
+      variant: "danger",
+    });
+    if (ok) {
       setCart([]);
     }
-  };
+  }, [confirm]);
 
   const getTotalPrice = () => {
     return cart.reduce((total, item) => total + item.price * item.quantity, 0);

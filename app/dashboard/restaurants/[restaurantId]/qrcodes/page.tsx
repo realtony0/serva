@@ -12,6 +12,7 @@ import { useParams, useRouter } from "next/navigation";
 import { ProtectedAdminRoute } from "@/components/auth/ProtectedAdminRoute";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
+import { useToast } from "@/components/ui/Toast";
 import {
   getTablesByRestaurant,
   createTablesForRestaurant,
@@ -33,6 +34,7 @@ function QRCodePageContent() {
   const [error, setError] = useState("");
   const [generating, setGenerating] = useState(false);
   const [numberOfTables, setNumberOfTables] = useState(10);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (restaurantId) {
@@ -66,7 +68,7 @@ function QRCodePageContent() {
 
   const handleGenerateTables = async () => {
     if (numberOfTables <= 0 || numberOfTables > 100) {
-      alert("Le nombre de tables doit être entre 1 et 100");
+      toast.warning("Le nombre de tables doit être entre 1 et 100");
       return;
     }
 
@@ -74,10 +76,11 @@ function QRCodePageContent() {
       setGenerating(true);
       const baseUrl = getBaseUrl();
       await createTablesForRestaurant(restaurantId, numberOfTables, baseUrl);
-      await loadData(); // Recharger les tables
-      alert(`${numberOfTables} tables créées avec succès !`);
-    } catch (err: any) {
-      alert("Erreur lors de la création: " + err.message);
+      await loadData();
+      toast.success(`${numberOfTables} tables créées avec succès !`);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Erreur inconnue";
+      toast.error(`Erreur lors de la création : ${message}`);
     } finally {
       setGenerating(false);
     }

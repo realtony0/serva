@@ -11,6 +11,7 @@ import { useParams, useRouter } from "next/navigation";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
+import { useConfirm } from "@/components/ui/ConfirmModal";
 import { getRestaurantById } from "@/services/restaurant-auth-service";
 import {
   getCategoriesByRestaurant,
@@ -43,6 +44,8 @@ function RestaurantMenuContent() {
   const params = useParams();
   const router = useRouter();
   const restaurantId = params.restaurantId as string;
+
+  const { confirm } = useConfirm();
 
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [activeTab, setActiveTab] = useState<ActiveTab>("categories");
@@ -163,7 +166,8 @@ function RestaurantMenuContent() {
   };
 
   const handleDeleteCategory = async (id: string) => {
-    if (!confirm("Supprimer cette catégorie ?")) return;
+    const ok = await confirm("Supprimer cette catégorie ?", { confirmText: "Supprimer", variant: "danger" });
+    if (!ok) return;
     try {
       setDeletingCategoryId(id);
       await deleteCategoryForRestaurant(restaurantId, id);
@@ -203,7 +207,8 @@ function RestaurantMenuContent() {
   };
 
   const handleDeleteType = async (id: string) => {
-    if (!confirm("Supprimer ce type ?")) return;
+    const ok = await confirm("Supprimer ce type ?", { confirmText: "Supprimer", variant: "danger" });
+    if (!ok) return;
     try {
       setDeletingTypeId(id);
       await deleteTypeForRestaurant(restaurantId, id);
@@ -252,7 +257,8 @@ function RestaurantMenuContent() {
   };
 
   const handleDeleteProduct = async (id: string) => {
-    if (!confirm("Désactiver ce produit ?")) return;
+    const ok = await confirm("Désactiver ce produit ?", { confirmText: "Désactiver", variant: "danger" });
+    if (!ok) return;
     try {
       setDeletingProductId(id);
       await deleteProductForRestaurant(restaurantId, id);
