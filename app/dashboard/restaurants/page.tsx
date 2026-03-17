@@ -17,6 +17,8 @@ import {
   deleteRestaurant,
 } from "@/services/restaurant-service";
 import { Restaurant, RestaurantFormData } from "@/lib/types/restaurant";
+import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmModal";
 import Link from "next/link";
 
 function RestaurantsContent() {
@@ -28,6 +30,8 @@ function RestaurantsContent() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [generatingForId, setGeneratingForId] = useState<string | null>(null);
+  const { showToast } = useToast();
+  const { confirm } = useConfirm();
 
   // Formulaire
   const [formData, setFormData] = useState<RestaurantFormData>({
@@ -95,7 +99,7 @@ function RestaurantsContent() {
 
   const handleGenerateQRCodes = async (restaurantId: string, numberOfTables: number) => {
     if (numberOfTables <= 0) {
-      alert("Ce restaurant n'a pas de tables configurées.");
+      showToast("Ce restaurant n'a pas de tables configurees.", "error");
       return;
     }
 
@@ -115,9 +119,8 @@ function RestaurantsContent() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer ce restaurant ?")) {
-      return;
-    }
+    const ok = await confirm({ message: "Etes-vous sur de vouloir supprimer ce restaurant ?" });
+    if (!ok) return;
 
     try {
       await deleteRestaurant(id);

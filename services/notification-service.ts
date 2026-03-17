@@ -67,13 +67,20 @@ export function listenToNotifications(
     orderBy("createdAt", "desc")
   );
 
-  return onSnapshot(q, (snapshot) => {
-    const notifications: RestaurantNotification[] = [];
-    snapshot.forEach((doc) => {
-      notifications.push({ id: doc.id, ...doc.data() } as RestaurantNotification);
-    });
-    callback(notifications);
-  });
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const notifications: RestaurantNotification[] = [];
+      snapshot.forEach((doc) => {
+        notifications.push({ id: doc.id, ...doc.data() } as RestaurantNotification);
+      });
+      callback(notifications);
+    },
+    (error) => {
+      console.error("Erreur onSnapshot (notifications):", error);
+      callback([]);
+    }
+  );
 }
 
 /**

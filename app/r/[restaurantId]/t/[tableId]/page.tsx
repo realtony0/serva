@@ -25,6 +25,8 @@ import RestaurantHeader from "@/components/client/RestaurantHeader";
 import OrderStatusNotification from "@/components/client/OrderStatusNotification";
 import FeedbackModal from "@/components/client/FeedbackModal";
 import { createNotification } from "@/services/notification-service";
+import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmModal";
 
 export default function ClientPage() {
   const params = useParams();
@@ -42,6 +44,8 @@ export default function ClientPage() {
   const [isRequestingBill, setIsRequestingBill] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [language, setLanguage] = useState<"fr" | "en">("fr");
+  const { showToast } = useToast();
+  const { confirm } = useConfirm();
 
   // Charger les données au montage
   useEffect(() => {
@@ -172,8 +176,9 @@ export default function ClientPage() {
     );
   };
 
-  const clearCart = () => {
-    if (confirm("Voulez-vous vider le panier ?")) {
+  const clearCart = async () => {
+    const ok = await confirm({ message: "Voulez-vous vider le panier ?" });
+    if (ok) {
       setCart([]);
     }
   };
@@ -205,10 +210,19 @@ export default function ClientPage() {
     try {
       setIsCallingWaiter(true);
       const tableNumber = parseInt(tableId.split('_').pop() || "0");
-      await createServiceRequest(restaurantId, tableId, tableNumber, "server");
-      alert("🛎️ Un serveur a été appelé. Il arrive bientôt !");
+      await Promise.all([
+        createServiceRequest(restaurantId, tableId, tableNumber, "server"),
+        createNotification(
+          restaurantId,
+          tableId,
+          "call_waiter",
+          `Table ${tableNumber} appelle un serveur`
+        ),
+      ]);
+      showToast("Un serveur a ete appele. Il arrive bientot !");
     } catch (err: any) {
-      alert("Erreur: " + err.message);
+      console.error("Erreur appel serveur:", err);
+      showToast("Erreur lors de l'appel. Reessayez.", "error");
     } finally {
       setIsCallingWaiter(false);
     }
@@ -218,10 +232,19 @@ export default function ClientPage() {
     try {
       setIsRequestingBill(true);
       const tableNumber = parseInt(tableId.split('_').pop() || "0");
-      await createServiceRequest(restaurantId, tableId, tableNumber, "bill");
-      alert("🧾 Votre demande d'addition a été envoyée.");
+      await Promise.all([
+        createServiceRequest(restaurantId, tableId, tableNumber, "bill"),
+        createNotification(
+          restaurantId,
+          tableId,
+          "request_bill",
+          `Table ${tableNumber} demande l'addition`
+        ),
+      ]);
+      showToast("Votre demande d'addition a ete envoyee.");
     } catch (err: any) {
-      alert("Erreur: " + err.message);
+      console.error("Erreur demande addition:", err);
+      showToast("Erreur lors de la demande. Reessayez.", "error");
     } finally {
       setIsRequestingBill(false);
     }

@@ -8,6 +8,8 @@
 import { useState } from "react";
 import { CartItem } from "@/lib/types/cart";
 import { Button } from "@/components/ui/Button";
+import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmModal";
 
 interface CartProps {
   items: CartItem[];
@@ -30,65 +32,42 @@ export default function Cart({
 }: CartProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showToast } = useToast();
+  const { confirm } = useConfirm();
 
   const handleCheckout = async () => {
     if (items.length === 0) {
-      alert("Votre panier est vide");
+      showToast("Votre panier est vide", "info");
       return;
     }
 
-    // Vérifier que restaurantId et tableId sont présents
     if (!restaurantId || !tableId) {
-      alert("❌ Erreur : Informations de table manquantes. Veuillez scanner le QR code à nouveau.");
+      showToast("Informations de table manquantes. Scannez le QR code a nouveau.", "error");
       return;
     }
 
-    // Confirmation avant envoi avec détails
     const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
-    const confirmed = confirm(
-      `Confirmer la commande ?\n\n` +
-      `📋 Restaurant: ${restaurantId.substring(0, 20)}...\n` +
-      `🪑 Table: ${tableId}\n` +
-      `📦 Articles: ${itemCount}\n` +
-      `💰 Total: ${total.toLocaleString('fr-FR')} FCFA\n\n` +
-      `La commande sera envoyée au restaurant.`
-    );
+    const confirmed = await confirm({
+      title: "Confirmer la commande",
+      message: `${itemCount} article(s) - ${total.toLocaleString('fr-FR')} FCFA\n\nLa commande sera envoyee au restaurant.`,
+      confirmText: "Commander",
+      cancelText: "Annuler",
+    });
 
     if (!confirmed) return;
 
     setIsSubmitting(true);
     try {
-      // Importer et créer la commande
       const { createOrder } = await import("@/services/order-service");
-      
-      // Créer la commande dans Firestore
-      const orderId = await createOrder(restaurantId, tableId, items);
-      
-      // Message de succès avec toutes les informations
-      const successMessage = 
-        `✅ Commande envoyée avec succès !\n\n` +
-        `📋 Numéro de commande:\n${orderId}\n\n` +
-        `🪑 Table: ${tableId}\n` +
-        `📦 Articles: ${itemCount}\n` +
-        `💰 Total: ${total.toLocaleString('fr-FR')} FCFA\n\n` +
-        `Votre commande est en cours de préparation.\n` +
-        `Vous serez notifié lorsqu'elle sera prête.`;
-      
-      alert(successMessage);
-      
-      // Vider le panier après commande réussie
+      await createOrder(restaurantId, tableId, items);
+
+      showToast("Commande envoyee ! Vous serez notifie quand elle sera prete.");
+
       onClear();
       setIsOpen(false);
     } catch (error: any) {
       console.error("Erreur lors de l'envoi de la commande:", error);
-      
-      // Message d'erreur détaillé
-      const errorMessage = 
-        `❌ Erreur lors de l'envoi de la commande\n\n` +
-        `${error.message || "Erreur inconnue"}\n\n` +
-        `Veuillez réessayer ou contacter le service.`;
-      
-      alert(errorMessage);
+      showToast("Erreur lors de l'envoi. Reessayez.", "error");
     } finally {
       setIsSubmitting(false);
     }
