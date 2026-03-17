@@ -45,12 +45,20 @@ export const onCollectionChange = <T = DocumentData>(
   const collectionRef = collection(db, collectionName);
   const q = constraints.length > 0 ? query(collectionRef, ...constraints) : collectionRef;
 
-  return onSnapshot(q, (querySnapshot) => {
-    const data = querySnapshot.docs.map(
-      (doc) => ({ id: doc.id, ...doc.data() } as T)
-    );
-    callback(data);
-  });
+  return onSnapshot(
+    q,
+    (querySnapshot) => {
+      const data = querySnapshot.docs.map(
+        (doc) => ({ id: doc.id, ...doc.data() } as T)
+      );
+      callback(data);
+    },
+    (error) => {
+      console.error(`Erreur onSnapshot (${collectionName}):`, error);
+      // Return empty array on error so the UI doesn't break
+      callback([]);
+    }
+  );
 };
 
 /**

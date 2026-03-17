@@ -42,6 +42,12 @@ export default function ClientPage() {
   const [isRequestingBill, setIsRequestingBill] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [language, setLanguage] = useState<"fr" | "en">("fr");
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+
+  const showToast = (message: string, type: "success" | "error" = "success") => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3500);
+  };
 
   // Charger les données au montage
   useEffect(() => {
@@ -205,10 +211,19 @@ export default function ClientPage() {
     try {
       setIsCallingWaiter(true);
       const tableNumber = parseInt(tableId.split('_').pop() || "0");
-      await createServiceRequest(restaurantId, tableId, tableNumber, "server");
-      alert("🛎️ Un serveur a été appelé. Il arrive bientôt !");
+      await Promise.all([
+        createServiceRequest(restaurantId, tableId, tableNumber, "server"),
+        createNotification(
+          restaurantId,
+          tableId,
+          "call_waiter",
+          `Table ${tableNumber} appelle un serveur`
+        ),
+      ]);
+      showToast("Un serveur a ete appele. Il arrive bientot !");
     } catch (err: any) {
-      alert("Erreur: " + err.message);
+      console.error("Erreur appel serveur:", err);
+      showToast("Erreur lors de l'appel. Reessayez.", "error");
     } finally {
       setIsCallingWaiter(false);
     }
@@ -218,10 +233,19 @@ export default function ClientPage() {
     try {
       setIsRequestingBill(true);
       const tableNumber = parseInt(tableId.split('_').pop() || "0");
-      await createServiceRequest(restaurantId, tableId, tableNumber, "bill");
-      alert("🧾 Votre demande d'addition a été envoyée.");
+      await Promise.all([
+        createServiceRequest(restaurantId, tableId, tableNumber, "bill"),
+        createNotification(
+          restaurantId,
+          tableId,
+          "request_bill",
+          `Table ${tableNumber} demande l'addition`
+        ),
+      ]);
+      showToast("Votre demande d'addition a ete envoyee.");
     } catch (err: any) {
-      alert("Erreur: " + err.message);
+      console.error("Erreur demande addition:", err);
+      showToast("Erreur lors de la demande. Reessayez.", "error");
     } finally {
       setIsRequestingBill(false);
     }
@@ -268,6 +292,17 @@ export default function ClientPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-24">
+      {/* Toast notification */}
+      {toast && (
+        <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-xl shadow-2xl text-white font-semibold text-sm animate-slide-down max-w-sm text-center ${
+          toast.type === "success"
+            ? "bg-gradient-to-r from-green-500 to-emerald-600"
+            : "bg-gradient-to-r from-red-500 to-rose-600"
+        }`}>
+          {toast.message}
+        </div>
+      )}
+
       {/* Notification de statut des commandes */}
       <OrderStatusNotification
         restaurantId={restaurantId}
