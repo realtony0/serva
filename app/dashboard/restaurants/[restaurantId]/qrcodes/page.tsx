@@ -21,6 +21,7 @@ import { Table } from "@/lib/types/table";
 import { Restaurant } from "@/lib/types/restaurant";
 import { QRCodeSVG } from "qrcode.react";
 import { getBaseUrl } from "@/lib/utils/url";
+import { useToast } from "@/components/ui/Toast";
 
 function QRCodePageContent() {
   const params = useParams();
@@ -33,6 +34,7 @@ function QRCodePageContent() {
   const [error, setError] = useState("");
   const [generating, setGenerating] = useState(false);
   const [numberOfTables, setNumberOfTables] = useState(10);
+  const { showToast } = useToast();
 
   useEffect(() => {
     if (restaurantId) {
@@ -66,7 +68,7 @@ function QRCodePageContent() {
 
   const handleGenerateTables = async () => {
     if (numberOfTables <= 0 || numberOfTables > 100) {
-      alert("Le nombre de tables doit être entre 1 et 100");
+      showToast("Le nombre de tables doit etre entre 1 et 100", "error");
       return;
     }
 
@@ -74,10 +76,10 @@ function QRCodePageContent() {
       setGenerating(true);
       const baseUrl = getBaseUrl();
       await createTablesForRestaurant(restaurantId, numberOfTables, baseUrl);
-      await loadData(); // Recharger les tables
-      alert(`${numberOfTables} tables créées avec succès !`);
+      await loadData();
+      showToast(`${numberOfTables} tables creees avec succes !`);
     } catch (err: any) {
-      alert("Erreur lors de la création: " + err.message);
+      showToast("Erreur lors de la creation: " + err.message, "error");
     } finally {
       setGenerating(false);
     }

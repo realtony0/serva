@@ -23,6 +23,8 @@ import MenuDisplay from "@/components/client/MenuDisplay";
 import Cart from "@/components/client/Cart";
 import RestaurantHeader from "@/components/client/RestaurantHeader";
 import OrderStatusNotification from "@/components/client/OrderStatusNotification";
+import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmModal";
 
 export default function ClientPage() {
   const params = useParams();
@@ -38,6 +40,8 @@ export default function ClientPage() {
   const [error, setError] = useState("");
   const [tableId, setTableId] = useState<string>("");
   const [showTableInput, setShowTableInput] = useState(true);
+  const { showToast } = useToast();
+  const { confirm } = useConfirm();
 
   // Générer ou récupérer le tableId
   useEffect(() => {
@@ -140,7 +144,7 @@ export default function ClientPage() {
 
   const addToCart = (product: Product) => {
     if (!tableId) {
-      alert("Veuillez d'abord saisir votre numéro de table");
+      showToast("Veuillez d'abord saisir votre numero de table", "error");
       return;
     }
 
@@ -191,8 +195,9 @@ export default function ClientPage() {
     );
   };
 
-  const clearCart = () => {
-    if (confirm("Voulez-vous vider le panier ?")) {
+  const clearCart = async () => {
+    const ok = await confirm({ message: "Voulez-vous vider le panier ?" });
+    if (ok) {
       setCart([]);
     }
   };

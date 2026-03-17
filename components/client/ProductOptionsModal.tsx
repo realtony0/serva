@@ -7,6 +7,7 @@
 import { useState, useEffect } from "react";
 import { Product } from "@/lib/types/menu";
 import { Button } from "@/components/ui/Button";
+import { useToast } from "@/components/ui/Toast";
 
 interface ProductOptionsModalProps {
   product: Product;
@@ -27,6 +28,7 @@ export default function ProductOptionsModal({
 }: ProductOptionsModalProps) {
   const [selectedSides, setSelectedSides] = useState<string[]>([]);
   const [selectedSauces, setSelectedSauces] = useState<string[]>([]);
+  const { showToast } = useToast();
 
   const maxSides = product.maxSides || 3;
   const maxSauces = product.maxSauces || 1;
@@ -48,7 +50,7 @@ export default function ProductOptionsModal({
       if (selectedSides.length < maxSides) {
         setSelectedSides([...selectedSides, sideId]);
       } else {
-        alert(`Vous pouvez sélectionner au maximum ${maxSides} accompagnement(s)`);
+        showToast(`Maximum ${maxSides} accompagnement(s)`, "info");
       }
     }
   };
@@ -60,7 +62,7 @@ export default function ProductOptionsModal({
       if (selectedSauces.length < maxSauces) {
         setSelectedSauces([...selectedSauces, sauceId]);
       } else {
-        alert(`Vous pouvez sélectionner au maximum ${maxSauces} sauce(s)`);
+        showToast(`Maximum ${maxSauces} sauce(s)`, "info");
       }
     }
   };

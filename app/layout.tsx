@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "../styles/globals.css";
 import { AuthProviderWrapper } from "@/components/providers/AuthProviderWrapper";
+import { ToastProvider } from "@/components/ui/Toast";
+import { ConfirmProvider } from "@/components/ui/ConfirmModal";
 import PWARegister from "@/components/pwa/PWARegister";
 import InstallPrompt from "@/components/pwa/InstallPrompt";
 
@@ -49,7 +51,13 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="SERVA" />
       </head>
       <body className="antialiased">
-        <AuthProviderWrapper>{children}</AuthProviderWrapper>
+        <AuthProviderWrapper>
+          <ToastProvider>
+            <ConfirmProvider>
+              {children}
+            </ConfirmProvider>
+          </ToastProvider>
+        </AuthProviderWrapper>
         <PWARegister />
         <InstallPrompt />
       </body>

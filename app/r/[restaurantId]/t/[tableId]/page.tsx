@@ -25,6 +25,8 @@ import RestaurantHeader from "@/components/client/RestaurantHeader";
 import OrderStatusNotification from "@/components/client/OrderStatusNotification";
 import FeedbackModal from "@/components/client/FeedbackModal";
 import { createNotification } from "@/services/notification-service";
+import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmModal";
 
 export default function ClientPage() {
   const params = useParams();
@@ -42,12 +44,8 @@ export default function ClientPage() {
   const [isRequestingBill, setIsRequestingBill] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [language, setLanguage] = useState<"fr" | "en">("fr");
-  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
-
-  const showToast = (message: string, type: "success" | "error" = "success") => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3500);
-  };
+  const { showToast } = useToast();
+  const { confirm } = useConfirm();
 
   // Charger les données au montage
   useEffect(() => {
@@ -178,8 +176,9 @@ export default function ClientPage() {
     );
   };
 
-  const clearCart = () => {
-    if (confirm("Voulez-vous vider le panier ?")) {
+  const clearCart = async () => {
+    const ok = await confirm({ message: "Voulez-vous vider le panier ?" });
+    if (ok) {
       setCart([]);
     }
   };
@@ -292,17 +291,6 @@ export default function ClientPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-24">
-      {/* Toast notification */}
-      {toast && (
-        <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-xl shadow-2xl text-white font-semibold text-sm animate-slide-down max-w-sm text-center ${
-          toast.type === "success"
-            ? "bg-gradient-to-r from-green-500 to-emerald-600"
-            : "bg-gradient-to-r from-red-500 to-rose-600"
-        }`}>
-          {toast.message}
-        </div>
-      )}
-
       {/* Notification de statut des commandes */}
       <OrderStatusNotification
         restaurantId={restaurantId}

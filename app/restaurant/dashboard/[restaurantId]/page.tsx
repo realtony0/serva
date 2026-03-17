@@ -36,6 +36,8 @@ import { Table } from "@/lib/types/table";
 import { ServiceRequest } from "@/lib/types/service-request";
 import { Statistics } from "@/services/statistics-service";
 import { useAuth } from "@/lib/auth-context";
+import { useToast } from "@/components/ui/Toast";
+import { useConfirm } from "@/components/ui/ConfirmModal";
 import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
 import { 
@@ -82,6 +84,8 @@ function RestaurantDashboardContent() {
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
   const [newOrdersCount, setNewOrdersCount] = useState(0);
+  const { showToast } = useToast();
+  const { confirm: confirmDialog } = useConfirm();
 
   // Charger les données du restaurant
   useEffect(() => {
@@ -292,7 +296,7 @@ function RestaurantDashboardContent() {
         await markAsReady(orderId);
       }
     } catch (err: any) {
-      alert("Erreur lors de la mise à jour: " + err.message);
+      showToast("Erreur lors de la mise a jour: " + err.message, "error");
     }
   };
 
@@ -300,7 +304,7 @@ function RestaurantDashboardContent() {
     try {
       await markRequestAsHandled(requestId);
     } catch (err: any) {
-      alert("Erreur: " + err.message);
+      showToast("Erreur: " + err.message, "error");
     }
   };
 
@@ -412,7 +416,7 @@ function RestaurantDashboardContent() {
 
   const handleGenerateTables = async () => {
     if (numberOfTables <= 0 || numberOfTables > 100) {
-      alert("Le nombre de tables doit être entre 1 et 100");
+      showToast("Le nombre de tables doit etre entre 1 et 100", "error");
       return;
     }
 
@@ -431,7 +435,8 @@ function RestaurantDashboardContent() {
   };
 
   const handleDeleteTable = async (tableId: string) => {
-    if (!confirm("Supprimer cette table et son QR code ?")) return;
+    const ok = await confirmDialog({ message: "Supprimer cette table et son QR code ?" });
+    if (!ok) return;
 
     try {
       setDeletingTableId(tableId);
