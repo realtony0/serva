@@ -112,6 +112,7 @@ export default function Cart({
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40"
           onClick={() => setIsOpen(false)}
+          aria-hidden="true"
         />
       )}
 
@@ -122,6 +123,9 @@ export default function Cart({
         }`}
         style={{ maxHeight: "85vh" }}
         onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal={isOpen}
+        aria-label="Panier"
       >
         <div className="flex flex-col h-full">
           {/* Handle bar */}

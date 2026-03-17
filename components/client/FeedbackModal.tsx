@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { createFeedback } from "@/services/feedback-service";
 import { useToast } from "@/components/ui/Toast";
@@ -16,6 +16,15 @@ export default function FeedbackModal({ restaurantId, onClose }: FeedbackModalPr
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const { toast } = useToast();
+
+  // Fermeture avec Escape
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,10 +56,15 @@ export default function FeedbackModal({ restaurantId, onClose }: FeedbackModalPr
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 animate-fade-in">
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 animate-fade-in"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="feedback-title"
+    >
       <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden">
         <div className="p-6 border-b bg-blue-50">
-          <h3 className="text-xl font-bold text-gray-900">Votre avis nous intéresse</h3>
+          <h3 id="feedback-title" className="text-xl font-bold text-gray-900">Votre avis nous intéresse</h3>
           <p className="text-sm text-gray-600">Comment s&apos;est passée votre expérience ?</p>
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-6">

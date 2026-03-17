@@ -134,10 +134,10 @@ export default function OrderStatusNotification({
     <>
       {/* Barre de progression pour les commandes actives */}
       {activeOrders.length > 0 && (
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="bg-white rounded-2xl shadow-sm border border-blue-100 p-4">
+        <div className="max-w-7xl mx-auto px-4 py-4" role="region" aria-label="Suivi des commandes">
+          <div className="bg-white rounded-2xl shadow-sm border border-blue-100 p-4" aria-live="polite">
             <h4 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <span className="animate-pulse">🔥</span> Suivi de vos commandes ({activeOrders.length})
+              <span className="animate-pulse" aria-hidden="true">🔥</span> Suivi de vos commandes ({activeOrders.length})
             </h4>
             <div className="space-y-6">
               {activeOrders.map(order => {
@@ -171,27 +171,34 @@ export default function OrderStatusNotification({
 
       {/* Notification Toast (existant) */}
       {showNotification && readyOrders.length > 0 && (
-        <div className="fixed top-4 left-4 right-4 sm:left-auto sm:right-4 sm:max-w-md z-50 animate-slide-down">
-          {/* ... contenu existant du toast ... */}
+        <div
+          className="fixed top-4 left-4 right-4 sm:left-auto sm:right-4 sm:max-w-md z-50 animate-slide-down"
+          role="alert"
+          aria-live="assertive"
+        >
           <div className="bg-green-500 text-white rounded-lg shadow-2xl p-6 border-2 border-green-600">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
                 <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                  <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="text-xl font-bold mb-2">🎉 Votre commande est prête !</h3>
+                <h3 className="text-xl font-bold mb-2">Votre commande est prête !</h3>
                 <p className="text-green-50 mb-3">
                   {readyOrders.length === 1
                     ? "Votre commande peut être récupérée."
                     : `${readyOrders.length} de vos commandes sont prêtes.`}
                 </p>
               </div>
-              <button onClick={() => setShowNotification(false)} className="flex-shrink-0 text-white hover:text-green-100 transition-colors">
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <button
+                onClick={() => setShowNotification(false)}
+                className="flex-shrink-0 text-white hover:text-green-100 transition-colors"
+                aria-label="Fermer la notification"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
