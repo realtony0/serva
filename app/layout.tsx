@@ -5,6 +5,7 @@ import { ToastProvider } from "@/components/ui/Toast";
 import { ConfirmProvider } from "@/components/ui/ConfirmModal";
 import PWARegister from "@/components/pwa/PWARegister";
 import InstallPrompt from "@/components/pwa/InstallPrompt";
+import EidBanner from "@/components/ui/EidBanner";
 
 export const metadata: Metadata = {
   title: "SERVA - Plateforme SaaS Restaurant",
@@ -39,7 +40,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
+    <html lang="fr" className="dark">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -51,6 +52,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="SERVA" />
       </head>
       <body className="antialiased">
+        <EidBanner />
         <AuthProviderWrapper>
           <ToastProvider>
             <ConfirmProvider>
