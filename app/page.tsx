@@ -3,7 +3,7 @@ import {
   QrCode,
   Zap,
   ChefHat,
-  CreditCard,
+  Users,
   Palette,
   BarChart3,
   Bell,
@@ -12,7 +12,6 @@ import {
   Check,
   ArrowRight,
   TrendingUp,
-  Users,
   UtensilsCrossed,
   Timer,
 } from "lucide-react";
@@ -287,9 +286,9 @@ function HowItWorks() {
     },
     {
       num: "04",
-      icon: CreditCard,
-      title: "Pay & review",
-      desc: "Card, mobile money, Apple/Google Pay — all at the table. Customers leave a review when they're done.",
+      icon: Star,
+      title: "Leave a review",
+      desc: "Once the meal is done, customers get a quick prompt to rate their experience. Effortless feedback for you.",
     },
   ];
 
@@ -382,7 +381,7 @@ function TwoInterfaces() {
                 "Instant menu on scan — no download, no login",
                 "Beautiful menu with photos, allergens & options",
                 "Live order tracking right on their phone",
-                "Call waiter button, payment at the table",
+                "Call waiter button, live order tracking",
                 "One-tap review when done",
               ].map((item) => (
                 <li key={item} className="flex items-start gap-2.5">
@@ -421,9 +420,9 @@ function Features() {
       desc: "Course-aware kitchen screen. Your team always knows what's next, what's urgent, what's done.",
     },
     {
-      icon: CreditCard,
-      title: "Table-side payment",
-      desc: "Card, Apple Pay, Google Pay, Mobile Money. Payment processed at the table, no runner needed.",
+      icon: Bell,
+      title: "Waiter call",
+      desc: "Guests call for help with one tap. Your staff sees it instantly on the dashboard — no shouting across the room.",
     },
     {
       icon: Palette,
@@ -436,9 +435,9 @@ function Features() {
       desc: "Revenue by hour, bestsellers, table turnover. Actionable data, exportable anytime.",
     },
     {
-      icon: Bell,
-      title: "Waiter call",
-      desc: "Guests call for help with one tap. Your staff sees it instantly on the dashboard.",
+      icon: Users,
+      title: "Table management",
+      desc: "Visual floor plan, table status in real time. Know exactly which tables are occupied, waiting, or free.",
     },
     {
       icon: Star,

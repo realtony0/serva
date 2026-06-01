@@ -6,12 +6,15 @@ import {
   Plus,
   Minus,
   X,
-  ChevronRight,
   Leaf,
   Flame,
+  CheckCircle2,
+  Clock,
+  Bell,
+  Loader2,
 } from "lucide-react";
 
-// ── Mock data ─────────────────────────────────────────────────────────────────
+// ── Mock data (will be replaced with real Supabase fetch) ─────────────────────
 
 const restaurant = {
   name: "The Grand Bistro",
@@ -35,98 +38,18 @@ type MenuItem = {
 };
 
 const menuItems: MenuItem[] = [
-  {
-    id: "s1",
-    categoryId: "starters",
-    name: "Caesar Salad",
-    description: "Romaine lettuce, house-made Caesar dressing, croutons, Parmesan",
-    price: 12.9,
-    badge: "popular",
-  },
-  {
-    id: "s2",
-    categoryId: "starters",
-    name: "Bruschetta al Pomodoro",
-    description: "Toasted sourdough, heirloom tomatoes, fresh basil, extra-virgin olive oil",
-    price: 10.5,
-    badge: "vegan",
-  },
-  {
-    id: "s3",
-    categoryId: "starters",
-    name: "Spicy Chicken Wings",
-    description: "Crispy wings tossed in house hot sauce, blue-cheese dip",
-    price: 14.0,
-    badge: "spicy",
-  },
-  {
-    id: "m1",
-    categoryId: "mains",
-    name: "Grilled Ribeye Steak",
-    description: "12 oz dry-aged ribeye, garlic mashed potatoes, seasonal vegetables",
-    price: 42.0,
-    badge: "popular",
-  },
-  {
-    id: "m2",
-    categoryId: "mains",
-    name: "Wild Mushroom Pasta",
-    description: "Tagliatelle, wild mushrooms, truffle oil, Pecorino Romano",
-    price: 22.5,
-    badge: "vegan",
-  },
-  {
-    id: "m3",
-    categoryId: "mains",
-    name: "Pan-Seared Salmon",
-    description: "Atlantic salmon, lemon beurre blanc, asparagus, new potatoes",
-    price: 29.0,
-  },
-  {
-    id: "m4",
-    categoryId: "mains",
-    name: "Spicy Lamb Tagine",
-    description: "Slow-cooked lamb, preserved lemon, couscous, harissa",
-    price: 34.0,
-    badge: "spicy",
-  },
-  {
-    id: "d1",
-    categoryId: "desserts",
-    name: "Tiramisu",
-    description: "Classic Italian, espresso-soaked ladyfingers, mascarpone cream",
-    price: 9.5,
-    badge: "popular",
-  },
-  {
-    id: "d2",
-    categoryId: "desserts",
-    name: "Dark Chocolate Fondant",
-    description: "Warm chocolate cake, molten centre, vanilla ice cream",
-    price: 11.0,
-  },
-  {
-    id: "dr1",
-    categoryId: "drinks",
-    name: "Sparkling Water",
-    description: "500 ml, San Pellegrino",
-    price: 4.0,
-  },
-  {
-    id: "dr2",
-    categoryId: "drinks",
-    name: "House Red Wine",
-    description: "Glass of our curated house red",
-    price: 9.5,
-  },
-  {
-    id: "dr3",
-    categoryId: "drinks",
-    name: "Fresh Lemonade",
-    description: "Hand-squeezed, mint, lightly sweetened",
-    price: 5.5,
-    badge: "vegan",
-  },
+  { id: "s1", categoryId: "starters", name: "Caesar Salad", description: "Romaine lettuce, house-made Caesar dressing, croutons, Parmesan", price: 12.9, badge: "popular" },
+  { id: "s2", categoryId: "starters", name: "Bruschetta al Pomodoro", description: "Toasted sourdough, heirloom tomatoes, fresh basil, olive oil", price: 10.5, badge: "vegan" },
+  { id: "s3", categoryId: "starters", name: "Spicy Chicken Wings", description: "Crispy wings tossed in house hot sauce, blue-cheese dip", price: 14.0, badge: "spicy" },
+  { id: "m1", categoryId: "mains", name: "Grilled Ribeye Steak", description: "12 oz dry-aged ribeye, garlic mashed potatoes, seasonal vegetables", price: 42.0, badge: "popular" },
+  { id: "m2", categoryId: "mains", name: "Wild Mushroom Pasta", description: "Tagliatelle, wild mushrooms, truffle oil, Pecorino Romano", price: 22.5, badge: "vegan" },
+  { id: "m3", categoryId: "mains", name: "Pan-Seared Salmon", description: "Atlantic salmon, lemon beurre blanc, asparagus, new potatoes", price: 29.0 },
+  { id: "m4", categoryId: "mains", name: "Spicy Lamb Tagine", description: "Slow-cooked lamb, preserved lemon, couscous, harissa", price: 34.0, badge: "spicy" },
+  { id: "d1", categoryId: "desserts", name: "Tiramisu", description: "Classic Italian, espresso-soaked ladyfingers, mascarpone cream", price: 9.5, badge: "popular" },
+  { id: "d2", categoryId: "desserts", name: "Dark Chocolate Fondant", description: "Warm chocolate cake, molten centre, vanilla ice cream", price: 11.0 },
+  { id: "dr1", categoryId: "drinks", name: "Sparkling Water", description: "500 ml, San Pellegrino", price: 4.0 },
+  { id: "dr2", categoryId: "drinks", name: "House Red Wine", description: "Glass of our curated house red", price: 9.5 },
+  { id: "dr3", categoryId: "drinks", name: "Fresh Lemonade", description: "Hand-squeezed, mint, lightly sweetened", price: 5.5, badge: "vegan" },
 ];
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -138,93 +61,56 @@ type CartItem = {
   quantity: number;
 };
 
+type OrderState = "idle" | "sending" | "confirmed";
+
 // ── Badge ─────────────────────────────────────────────────────────────────────
 
 function Badge({ type }: { type: "popular" | "vegan" | "spicy" }) {
   if (type === "popular")
-    return (
-      <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">
-        Popular
-      </span>
-    );
+    return <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">Popular</span>;
   if (type === "vegan")
-    return (
-      <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-green-50 text-green-700 px-2 py-0.5 rounded-full">
-        <Leaf className="w-2.5 h-2.5" /> Vegan
-      </span>
-    );
+    return <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-green-50 text-green-700 px-2 py-0.5 rounded-full"><Leaf className="w-2.5 h-2.5" /> Vegan</span>;
   if (type === "spicy")
-    return (
-      <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-red-50 text-red-600 px-2 py-0.5 rounded-full">
-        <Flame className="w-2.5 h-2.5" /> Spicy
-      </span>
-    );
+    return <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-red-50 text-red-600 px-2 py-0.5 rounded-full"><Flame className="w-2.5 h-2.5" /> Spicy</span>;
   return null;
 }
 
 // ── Menu item card ────────────────────────────────────────────────────────────
 
-function MenuCard({
-  item,
-  quantity,
-  onAdd,
-  onRemove,
-}: {
+function MenuCard({ item, quantity, onAdd, onRemove }: {
   item: MenuItem;
   quantity: number;
   onAdd: () => void;
   onRemove: () => void;
 }) {
+  const emoji = item.categoryId === "drinks" ? "🥤" : item.categoryId === "desserts" ? "🍰" : "🍽️";
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-col gap-3 shadow-sm">
       <div className="flex items-start gap-3">
-        {/* Colour placeholder for image */}
         <div className="w-16 h-16 bg-slate-100 rounded-lg shrink-0 flex items-center justify-center text-2xl select-none">
-          {item.categoryId === "drinks" ? "🥤" : item.categoryId === "desserts" ? "🍰" : "🍽️"}
+          {emoji}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
-            <h3 className="text-sm font-semibold text-slate-900 leading-snug">
-              {item.name}
-            </h3>
+            <h3 className="text-sm font-semibold text-slate-900 leading-snug">{item.name}</h3>
             {item.badge && <Badge type={item.badge} />}
           </div>
-          <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">
-            {item.description}
-          </p>
+          <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">{item.description}</p>
         </div>
       </div>
-
       <div className="flex items-center justify-between">
-        <p className="text-base font-bold text-slate-900">
-          ${item.price.toFixed(2)}
-        </p>
-
+        <p className="text-base font-bold text-slate-900">${item.price.toFixed(2)}</p>
         {quantity === 0 ? (
-          <button
-            onClick={onAdd}
-            className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            Add
+          <button onClick={onAdd} className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors">
+            <Plus className="w-3.5 h-3.5" /> Add
           </button>
         ) : (
           <div className="flex items-center gap-2">
-            <button
-              onClick={onRemove}
-              className="w-7 h-7 flex items-center justify-center bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
-              aria-label="Remove one"
-            >
+            <button onClick={onRemove} className="w-7 h-7 flex items-center justify-center bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
               <Minus className="w-3.5 h-3.5 text-slate-700" />
             </button>
-            <span className="text-sm font-bold text-slate-900 w-5 text-center">
-              {quantity}
-            </span>
-            <button
-              onClick={onAdd}
-              className="w-7 h-7 flex items-center justify-center bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
-              aria-label="Add one"
-            >
+            <span className="text-sm font-bold text-slate-900 w-5 text-center">{quantity}</span>
+            <button onClick={onAdd} className="w-7 h-7 flex items-center justify-center bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
               <Plus className="w-3.5 h-3.5 text-white" />
             </button>
           </div>
@@ -236,73 +122,67 @@ function MenuCard({
 
 // ── Cart drawer ───────────────────────────────────────────────────────────────
 
-function CartDrawer({
-  items,
-  onClose,
-  onAdd,
-  onRemove,
-  tableId,
-}: {
+function CartDrawer({ items, onClose, onAdd, onRemove, tableId, onPlaceOrder, orderState }: {
   items: CartItem[];
   onClose: () => void;
   onAdd: (id: string) => void;
   onRemove: (id: string) => void;
   tableId: string;
+  onPlaceOrder: (notes: string) => void;
+  orderState: OrderState;
 }) {
-  const subtotal = items.reduce((s, i) => s + i.price * i.quantity, 0);
-  const tax = subtotal * 0.1;
-  const total = subtotal + tax;
+  const [notes, setNotes] = useState("");
+  const total = items.reduce((s, i) => s + i.price * i.quantity, 0);
+  const itemCount = items.reduce((s, i) => s + i.quantity, 0);
+
+  // Order confirmed state
+  if (orderState === "confirmed") {
+    return (
+      <>
+        <div className="fixed inset-0 bg-black/40 z-40" />
+        <div className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl p-8 flex flex-col items-center text-center">
+          <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
+            <CheckCircle2 className="w-8 h-8 text-green-600" />
+          </div>
+          <h2 className="text-xl font-bold text-slate-900 mb-2">Order placed!</h2>
+          <p className="text-slate-500 text-sm mb-1">Your order is being prepared.</p>
+          <p className="text-slate-500 text-sm mb-6">
+            <Clock className="w-3.5 h-3.5 inline mr-1" />
+            The kitchen received it instantly.
+          </p>
+          <p className="text-xs text-blue-600 font-medium">Table {tableId}</p>
+          <button onClick={onClose} className="mt-6 w-full bg-blue-600 text-white rounded-xl py-3 font-semibold text-sm hover:bg-blue-700 transition-colors">
+            Continue browsing
+          </button>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
-      {/* Overlay */}
-      <div
-        className="fixed inset-0 bg-black/40 z-40"
-        onClick={onClose}
-        aria-hidden
-      />
-
-      {/* Drawer */}
+      <div className="fixed inset-0 bg-black/40 z-40" onClick={onClose} />
       <div className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl max-h-[85vh] flex flex-col">
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-          <h2 className="text-base font-bold text-slate-900">Your Cart</h2>
-          <button
-            onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
-            aria-label="Close cart"
-          >
+          <h2 className="text-base font-bold text-slate-900">Your order · {itemCount} {itemCount === 1 ? "item" : "items"}</h2>
+          <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
             <X className="w-4 h-4" />
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto px-5 py-3 space-y-3">
           {items.map((item) => (
-            <div
-              key={item.menuItemId}
-              className="flex items-center gap-3 py-2"
-            >
+            <div key={item.menuItemId} className="flex items-center gap-3 py-2">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-slate-900 truncate">
-                  {item.name}
-                </p>
-                <p className="text-xs text-slate-500">
-                  ${item.price.toFixed(2)} each
-                </p>
+                <p className="text-sm font-semibold text-slate-900 truncate">{item.name}</p>
+                <p className="text-xs text-slate-500">${item.price.toFixed(2)} each</p>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <button
-                  onClick={() => onRemove(item.menuItemId)}
-                  className="w-6 h-6 flex items-center justify-center bg-slate-100 hover:bg-slate-200 rounded-md transition-colors"
-                >
+                <button onClick={() => onRemove(item.menuItemId)} className="w-6 h-6 flex items-center justify-center bg-slate-100 hover:bg-slate-200 rounded-md transition-colors">
                   <Minus className="w-3 h-3 text-slate-700" />
                 </button>
-                <span className="text-sm font-bold text-slate-900 w-4 text-center">
-                  {item.quantity}
-                </span>
-                <button
-                  onClick={() => onAdd(item.menuItemId)}
-                  className="w-6 h-6 flex items-center justify-center bg-blue-600 hover:bg-blue-700 rounded-md transition-colors"
-                >
+                <span className="text-sm font-bold text-slate-900 w-4 text-center">{item.quantity}</span>
+                <button onClick={() => onAdd(item.menuItemId)} className="w-6 h-6 flex items-center justify-center bg-blue-600 hover:bg-blue-700 rounded-md transition-colors">
                   <Plus className="w-3 h-3 text-white" />
                 </button>
               </div>
@@ -313,30 +193,66 @@ function CartDrawer({
           ))}
         </div>
 
-        <div className="px-5 py-4 border-t border-slate-100 space-y-2">
-          <div className="flex justify-between text-sm text-slate-600">
-            <span>Subtotal</span>
-            <span>${subtotal.toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between text-sm text-slate-600">
-            <span>Tax (10%)</span>
-            <span>${tax.toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between text-base font-bold text-slate-900 pt-2 border-t border-slate-100">
+        {/* Notes field */}
+        <div className="px-5 pt-3 pb-1">
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Special requests or allergies…"
+            rows={2}
+            className="w-full text-sm text-slate-700 placeholder-slate-400 border border-slate-200 rounded-xl px-3 py-2 resize-none focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+          />
+        </div>
+
+        <div className="px-5 py-4 border-t border-slate-100">
+          <div className="flex justify-between text-base font-bold text-slate-900 mb-3">
             <span>Total</span>
             <span>${total.toFixed(2)}</span>
           </div>
 
-          <button className="mt-3 w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm py-3.5 rounded-xl transition-colors">
-            Place order — ${total.toFixed(2)}
-            <ChevronRight className="w-4 h-4" />
+          <button
+            onClick={() => onPlaceOrder(notes)}
+            disabled={orderState === "sending"}
+            className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold text-sm py-4 rounded-xl transition-colors"
+          >
+            {orderState === "sending" ? (
+              <><Loader2 className="w-4 h-4 animate-spin" /> Sending to kitchen…</>
+            ) : (
+              <>Send order to kitchen</>
+            )}
           </button>
-          <p className="text-center text-xs text-slate-400">
-            Table {tableId}
+
+          <p className="text-center text-xs text-slate-400 mt-2">
+            Table {tableId} · A server will bring your order
           </p>
         </div>
       </div>
     </>
+  );
+}
+
+// ── Waiter call button ────────────────────────────────────────────────────────
+
+function CallWaiterButton({ tableId }: { tableId: string }) {
+  const [called, setCalled] = useState(false);
+
+  function handleCall() {
+    setCalled(true);
+    setTimeout(() => setCalled(false), 5000);
+  }
+
+  return (
+    <button
+      onClick={handleCall}
+      className={`fixed bottom-6 right-4 z-30 flex items-center gap-2 text-xs font-semibold px-3 py-2.5 rounded-xl shadow-lg transition-all ${
+        called
+          ? "bg-green-100 text-green-700 border border-green-200"
+          : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50"
+      }`}
+    >
+      <Bell className={`w-3.5 h-3.5 ${called ? "text-green-600" : "text-slate-500"}`} />
+      {called ? "Waiter notified!" : "Call waiter"}
+    </button>
   );
 }
 
@@ -351,6 +267,7 @@ export default function TableMenuPage({
   const [activeCategory, setActiveCategory] = useState(categories[0].id);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
+  const [orderState, setOrderState] = useState<OrderState>("idle");
 
   const totalItems = cart.reduce((s, i) => s + i.quantity, 0);
 
@@ -361,15 +278,8 @@ export default function TableMenuPage({
   function addToCart(item: MenuItem) {
     setCart((prev) => {
       const existing = prev.find((c) => c.menuItemId === item.id);
-      if (existing) {
-        return prev.map((c) =>
-          c.menuItemId === item.id ? { ...c, quantity: c.quantity + 1 } : c
-        );
-      }
-      return [
-        ...prev,
-        { menuItemId: item.id, name: item.name, price: item.price, quantity: 1 },
-      ];
+      if (existing) return prev.map((c) => c.menuItemId === item.id ? { ...c, quantity: c.quantity + 1 } : c);
+      return [...prev, { menuItemId: item.id, name: item.name, price: item.price, quantity: 1 }];
     });
   }
 
@@ -377,18 +287,25 @@ export default function TableMenuPage({
     setCart((prev) => {
       const existing = prev.find((c) => c.menuItemId === itemId);
       if (!existing) return prev;
-      if (existing.quantity === 1) {
-        return prev.filter((c) => c.menuItemId !== itemId);
-      }
-      return prev.map((c) =>
-        c.menuItemId === itemId ? { ...c, quantity: c.quantity - 1 } : c
-      );
+      if (existing.quantity === 1) return prev.filter((c) => c.menuItemId !== itemId);
+      return prev.map((c) => c.menuItemId === itemId ? { ...c, quantity: c.quantity - 1 } : c);
     });
   }
 
-  const visibleItems = menuItems.filter(
-    (item) => item.categoryId === activeCategory
-  );
+  async function placeOrder(notes: string) {
+    setOrderState("sending");
+    // TODO: POST to /api/orders with cart + tableId when anon key is configured
+    await new Promise((r) => setTimeout(r, 1200));
+    setOrderState("confirmed");
+    setCart([]);
+  }
+
+  function handleCartClose() {
+    setCartOpen(false);
+    if (orderState === "confirmed") setOrderState("idle");
+  }
+
+  const visibleItems = menuItems.filter((item) => item.categoryId === activeCategory);
 
   return (
     <div className="min-h-screen bg-slate-50 pb-28">
@@ -397,9 +314,7 @@ export default function TableMenuPage({
         <div className="max-w-lg mx-auto px-4 py-4">
           <h1 className="text-lg font-bold text-slate-900">{restaurant.name}</h1>
           <p className="text-xs text-slate-500 mt-0.5">{restaurant.description}</p>
-          <p className="text-xs font-semibold text-blue-600 mt-1">
-            Table {tableId}
-          </p>
+          <p className="text-xs font-semibold text-blue-600 mt-1">Table {tableId}</p>
         </div>
 
         {/* Category tabs */}
@@ -409,9 +324,7 @@ export default function TableMenuPage({
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
               className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                activeCategory === cat.id
-                  ? "bg-blue-600 text-white"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                activeCategory === cat.id ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
               {cat.name}
@@ -435,6 +348,9 @@ export default function TableMenuPage({
         </div>
       </div>
 
+      {/* Waiter call button */}
+      {totalItems === 0 && <CallWaiterButton tableId={tableId} />}
+
       {/* Floating cart button */}
       {totalItems > 0 && (
         <div className="fixed bottom-6 inset-x-0 flex justify-center z-40 px-4">
@@ -449,14 +365,9 @@ export default function TableMenuPage({
                   {totalItems}
                 </span>
               </div>
-              <span>View cart</span>
+              <span>View order</span>
             </div>
-            <span>
-              $
-              {cart
-                .reduce((s, i) => s + i.price * i.quantity, 0)
-                .toFixed(2)}
-            </span>
+            <span>${cart.reduce((s, i) => s + i.price * i.quantity, 0).toFixed(2)}</span>
           </button>
         </div>
       )}
@@ -465,13 +376,12 @@ export default function TableMenuPage({
       {cartOpen && (
         <CartDrawer
           items={cart}
-          onClose={() => setCartOpen(false)}
-          onAdd={(id) => {
-            const item = menuItems.find((m) => m.id === id);
-            if (item) addToCart(item);
-          }}
+          onClose={handleCartClose}
+          onAdd={(id) => { const item = menuItems.find((m) => m.id === id); if (item) addToCart(item); }}
           onRemove={removeFromCart}
           tableId={tableId}
+          onPlaceOrder={placeOrder}
+          orderState={orderState}
         />
       )}
     </div>
