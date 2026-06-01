@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import {
   ShoppingCart,
   Plus,
@@ -345,9 +345,9 @@ function CartDrawer({
 export default function TableMenuPage({
   params,
 }: {
-  params: { restaurantSlug: string; tableId: string };
+  params: Promise<{ restaurantSlug: string; tableId: string }>;
 }) {
-  const { tableId } = params;
+  const { tableId } = use(params);
   const [activeCategory, setActiveCategory] = useState(categories[0].id);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
