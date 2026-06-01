@@ -225,7 +225,7 @@ function Hero() {
                 href="/signup"
                 className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-6 py-3.5 rounded-xl hover:bg-blue-700 transition-colors font-semibold text-sm shadow-lg shadow-blue-200"
               >
-                Start for free — 30 days
+                Start for free — 7 days
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <a
@@ -552,7 +552,7 @@ function FinalCTA() {
           Your restaurant,<br />digital by tonight.
         </h2>
         <p className="mt-5 text-blue-100 text-lg">
-          30-day free trial. No credit card. Full setup in under 10 minutes.
+          7-day free trial. No credit card. Full setup in under 10 minutes.
         </p>
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link href="/signup" className="inline-flex items-center gap-2 bg-white text-blue-600 px-8 py-4 rounded-xl hover:bg-blue-50 transition-colors font-bold text-base shadow-lg">

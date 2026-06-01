@@ -153,7 +153,7 @@ export default function Pricing() {
             Simple and transparent.
           </h2>
           <p className="mt-4 text-slate-500">
-            30-day free trial on all plans. No credit card required.
+            7-day free trial on all plans. No credit card required.
           </p>
         </div>
 
