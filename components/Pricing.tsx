@@ -184,10 +184,9 @@ export default function Pricing() {
           </p>
         </div>
 
-        {/* Controls row */}
-        <div className="flex flex-wrap items-center gap-4 mb-12">
-          {/* Region selector */}
-          <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-xl p-1 shadow-sm">
+        {/* Region selector */}
+        <div className="flex justify-center mb-4">
+          <div className="inline-flex items-center gap-1 bg-white border border-slate-200 rounded-xl p-1 shadow-sm">
             {REGIONS.map((r) => (
               <button
                 key={r.code}
@@ -201,39 +200,43 @@ export default function Pricing() {
               </button>
             ))}
           </div>
+        </div>
 
-          {/* Billing toggle */}
-          <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-xl p-1 shadow-sm">
+        {/* Billing toggle — centered, prominent */}
+        <div className="flex justify-center mb-10">
+          <div className="inline-flex items-center bg-white border border-slate-200 rounded-2xl p-1.5 shadow-sm gap-1">
             <button
               onClick={() => setBilling("monthly")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                billing === "monthly" ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-50"
+              className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                billing === "monthly"
+                  ? "bg-slate-900 text-white shadow-sm"
+                  : "text-slate-500 hover:text-slate-700"
               }`}
             >
               Monthly
             </button>
             <button
               onClick={() => setBilling("weekly")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                billing === "weekly" ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-50"
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                billing === "weekly"
+                  ? "bg-slate-900 text-white shadow-sm"
+                  : "text-slate-500 hover:text-slate-700"
               }`}
             >
               Weekly
-              <span className="text-[10px] font-bold bg-blue-600 text-white px-1.5 py-0.5 rounded-full">NEW</span>
+              <span className="text-[10px] font-bold bg-blue-600 text-white px-1.5 py-0.5 rounded-full leading-none">NEW</span>
             </button>
           </div>
-
-          {/* Detection status */}
-          {detecting ? (
-            <span className="flex items-center gap-1.5 text-xs text-slate-400">
-              <Loader2 className="w-3 h-3 animate-spin" /> Detecting location…
-            </span>
-          ) : (
-            <span className="text-xs text-slate-400">
-              Detected: {active.flag} {active.label}
-            </span>
-          )}
         </div>
+
+        {/* Detection status */}
+        <p className="text-center text-xs text-slate-400 mb-10">
+          {detecting ? (
+            <span className="inline-flex items-center gap-1.5"><Loader2 className="w-3 h-3 animate-spin" /> Detecting your location…</span>
+          ) : (
+            <span>Detected: {active.flag} {active.label}</span>
+          )}
+        </p>
 
         {/* ── WEEKLY plan ── */}
         {billing === "weekly" && (
