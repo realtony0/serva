@@ -1,67 +1,49 @@
 import Link from "next/link";
 import {
   QrCode,
-  LayoutDashboard,
-  MapPin,
-  CheckCircle,
-  ChevronRight,
-  Star,
   Zap,
+  ChefHat,
+  CreditCard,
+  Palette,
+  BarChart3,
+  Bell,
+  Star,
   Shield,
+  Check,
+  ArrowRight,
+  Clock,
 } from "lucide-react";
 
 // ── Navbar ────────────────────────────────────────────────────────────────────
 
 function Navbar() {
   return (
-    <header className="fixed top-0 inset-x-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <Zap className="w-4 h-4 text-white" strokeWidth={2.5} />
-            </div>
-            <span className="text-xl font-bold text-slate-900 tracking-tight">
-              Serva
-            </span>
-          </Link>
-
-          <nav className="hidden md:flex items-center gap-8">
-            <a
-              href="#features"
-              className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
-            >
-              Features
-            </a>
-            <a
-              href="#how-it-works"
-              className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
-            >
-              How it works
-            </a>
-            <a
-              href="#pricing"
-              className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
-            >
-              Pricing
-            </a>
-          </nav>
-
-          <div className="flex items-center gap-3">
-            <Link
-              href="/login"
-              className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors px-3 py-2"
-            >
-              Sign in
-            </Link>
-            <Link
-              href="/signup"
-              className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-            >
-              Get Started
-              <ChevronRight className="w-3.5 h-3.5" />
-            </Link>
+    <header className="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur-sm border-b border-slate-100">
+      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
+            <QrCode className="w-4 h-4 text-white" />
           </div>
+          <span className="text-xl font-bold text-slate-900">Serva</span>
+        </Link>
+
+        <nav className="hidden md:flex items-center gap-8">
+          <a href="#features" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">Features</a>
+          <a href="#how-it-works" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">How it works</a>
+          <a href="#pricing" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">Pricing</a>
+          <a href="#testimonials" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">Testimonials</a>
+        </nav>
+
+        <div className="flex items-center gap-3">
+          <Link href="/login" className="text-sm text-slate-600 hover:text-slate-900 transition-colors font-medium">
+            Sign in →
+          </Link>
+          <Link
+            href="/signup"
+            className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          >
+            Free trial
+          </Link>
         </div>
       </div>
     </header>
@@ -72,134 +54,206 @@ function Navbar() {
 
 function Hero() {
   return (
-    <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-50 to-white">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 text-blue-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-6">
-            <Star className="w-3 h-3 fill-blue-500 text-blue-500" />
-            Trusted by 500+ restaurants worldwide
+    <section className="pt-24 pb-16 bg-gradient-to-b from-slate-50 to-white">
+      <div className="max-w-7xl mx-auto px-6">
+
+        {/* Badge */}
+        <div className="flex justify-center mb-6">
+          <span className="inline-flex items-center gap-2 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
+            IN-TABLE ORDERING · NO APP REQUIRED
+          </span>
+        </div>
+
+        {/* Headline */}
+        <h1 className="text-5xl md:text-6xl font-bold text-slate-900 text-center leading-tight max-w-4xl mx-auto">
+          Your restaurant,{" "}
+          <span className="text-blue-600">fully digital.</span>
+        </h1>
+
+        <p className="mt-6 text-xl text-slate-500 text-center max-w-2xl mx-auto leading-relaxed">
+          Customers scan, order and pay from their phone. Your kitchen gets orders instantly.
+          You manage everything from one dashboard.
+        </p>
+
+        {/* CTAs */}
+        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Link
+            href="/signup"
+            className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3.5 rounded-xl hover:bg-blue-700 transition-colors font-semibold text-base shadow-sm shadow-blue-200"
+          >
+            Start free — 30 days
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+          <a
+            href="#how-it-works"
+            className="flex items-center gap-2 text-slate-700 px-6 py-3.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors font-medium text-base"
+          >
+            See how it works
+          </a>
+        </div>
+
+        {/* Trust line */}
+        <p className="mt-4 text-center text-sm text-slate-400">
+          No credit card required · Setup in under 10 min · Cancel anytime
+        </p>
+
+        {/* Stats bar */}
+        <div className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-px bg-slate-200 rounded-2xl overflow-hidden shadow-sm">
+          {[
+            { icon: Clock, value: "< 2s", label: "Menu load after scan" },
+            { icon: QrCode, value: "0", label: "Apps to download" },
+            { icon: Zap, value: "100%", label: "Real-time orders" },
+            { icon: Star, value: "30 days", label: "Free trial" },
+          ].map(({ icon: Icon, value, label }) => (
+            <div key={label} className="bg-white px-6 py-6 flex flex-col items-center text-center">
+              <Icon className="w-5 h-5 text-blue-600 mb-2" />
+              <span className="text-2xl font-bold text-slate-900">{value}</span>
+              <span className="text-xs text-slate-500 mt-1">{label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Mockup placeholder */}
+        <div className="mt-14 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 h-[420px] flex items-center justify-center shadow-2xl border border-slate-700/50">
+          <div className="text-center">
+            <div className="w-16 h-16 rounded-2xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center mx-auto mb-4">
+              <QrCode className="w-8 h-8 text-blue-400" />
+            </div>
+            <p className="text-slate-400 text-sm">Dashboard preview</p>
           </div>
+        </div>
+      </div>
+    </section>
+  );
+}
 
-          <h1 className="text-5xl sm:text-6xl font-bold text-slate-900 mb-6 text-balance">
-            The smartest way to manage your{" "}
-            <span className="text-blue-600">restaurant</span>
-          </h1>
+// ── How it works ──────────────────────────────────────────────────────────────
 
-          <p className="text-lg sm:text-xl text-slate-600 mb-10 text-balance leading-relaxed">
-            QR code ordering, real-time dashboards, and seamless kitchen
-            coordination — all in one platform built for modern restaurants.
+function HowItWorks() {
+  const steps = [
+    {
+      num: "01",
+      title: "Scan QR Code",
+      desc: "The customer scans the QR code on the table. No app to install. The menu opens instantly on their phone.",
+    },
+    {
+      num: "02",
+      title: "Order online",
+      desc: "The customer picks dishes, customizes options, and confirms. Done in under 2 minutes, directly from their phone.",
+    },
+    {
+      num: "03",
+      title: "Kitchen receives it",
+      desc: "The order appears instantly on the kitchen display (KDS). Your team prepares without any transmission errors.",
+    },
+    {
+      num: "04",
+      title: "Payment & Review",
+      desc: "Integrated payment (card, Apple Pay, Google Pay). The customer leaves a review once the meal is done.",
+    },
+  ];
+
+  return (
+    <section id="how-it-works" className="py-20 bg-white">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-14">
+          <span className="text-xs font-semibold tracking-widest text-blue-600 uppercase">How it works</span>
+          <h2 className="mt-3 text-4xl font-bold text-slate-900">
+            Simple for the customer.{" "}
+            <span className="text-blue-600">Powerful for you.</span>
+          </h2>
+          <p className="mt-4 text-slate-500 max-w-xl mx-auto">
+            4 steps and your restaurant is fully digitized.
           </p>
+        </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-16">
-            <Link
-              href="/signup"
-              className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors text-sm"
-            >
-              Get Started Free
-              <ChevronRight className="w-4 h-4" />
-            </Link>
-            <button className="inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-50 text-slate-700 font-semibold px-6 py-3 rounded-lg border border-slate-200 transition-colors text-sm">
-              Watch Demo
-              <span className="w-5 h-5 bg-slate-100 rounded-full flex items-center justify-center">
-                <span className="w-0 h-0 border-t-[4px] border-t-transparent border-b-[4px] border-b-transparent border-l-[7px] border-l-slate-600 ml-0.5" />
-              </span>
-            </button>
-          </div>
-
-          {/* Dashboard mockup placeholder */}
-          <div className="relative mx-auto max-w-4xl">
-            <div className="bg-white border border-slate-200 rounded-2xl shadow-[0_20px_60px_-10px_rgb(0,0,0,0.12)] overflow-hidden">
-              {/* Browser chrome */}
-              <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center gap-2">
-                <div className="flex gap-1.5">
-                  <div className="w-3 h-3 bg-slate-300 rounded-full" />
-                  <div className="w-3 h-3 bg-slate-300 rounded-full" />
-                  <div className="w-3 h-3 bg-slate-300 rounded-full" />
+        <div className="grid md:grid-cols-4 gap-6">
+          {steps.map((step, i) => (
+            <div key={step.num} className="relative">
+              {i < steps.length - 1 && (
+                <div className="hidden md:block absolute top-8 left-[calc(100%_-_12px)] w-6 text-slate-200">
+                  <ArrowRight className="w-5 h-5" />
                 </div>
-                <div className="flex-1 mx-4 bg-white border border-slate-200 rounded-md px-3 py-1 text-xs text-slate-400 text-left">
-                  app.serva.io/dashboard
-                </div>
-              </div>
-              {/* Dashboard preview */}
-              <div className="p-6 bg-slate-50 min-h-[320px]">
-                <div className="grid grid-cols-4 gap-4 mb-6">
-                  {[
-                    { label: "Today's Orders", value: "142", color: "blue" },
-                    { label: "Revenue", value: "$3,840", color: "green" },
-                    { label: "Active Tables", value: "18", color: "orange" },
-                    { label: "Avg Order", value: "$27", color: "purple" },
-                  ].map((stat) => (
-                    <div
-                      key={stat.label}
-                      className="bg-white rounded-xl border border-slate-200 p-4"
-                    >
-                      <p className="text-xs text-slate-500 mb-1">{stat.label}</p>
-                      <p className="text-2xl font-bold text-slate-900">
-                        {stat.value}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-                <div className="bg-white rounded-xl border border-slate-200 p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <p className="text-sm font-semibold text-slate-700">
-                      Recent Orders
-                    </p>
-                    <span className="text-xs text-blue-600 font-medium">
-                      View all
-                    </span>
-                  </div>
-                  <div className="space-y-2">
-                    {[
-                      {
-                        table: "Table 4",
-                        items: "3 items",
-                        status: "Preparing",
-                        amount: "$54",
-                      },
-                      {
-                        table: "Table 9",
-                        items: "2 items",
-                        status: "Ready",
-                        amount: "$32",
-                      },
-                      {
-                        table: "Table 12",
-                        items: "5 items",
-                        status: "Pending",
-                        amount: "$87",
-                      },
-                    ].map((order) => (
-                      <div
-                        key={order.table}
-                        className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0"
-                      >
-                        <span className="text-sm font-medium text-slate-700">
-                          {order.table}
-                        </span>
-                        <span className="text-xs text-slate-400">
-                          {order.items}
-                        </span>
-                        <span
-                          className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                            order.status === "Ready"
-                              ? "bg-green-50 text-green-700"
-                              : order.status === "Preparing"
-                              ? "bg-orange-50 text-orange-700"
-                              : "bg-slate-100 text-slate-600"
-                          }`}
-                        >
-                          {order.status}
-                        </span>
-                        <span className="text-sm font-semibold text-slate-900">
-                          {order.amount}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+              )}
+              <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 h-full">
+                <span className="text-4xl font-black text-blue-100 leading-none">{step.num}</span>
+                <h3 className="mt-3 text-base font-semibold text-slate-900">{step.title}</h3>
+                <p className="mt-2 text-sm text-slate-500 leading-relaxed">{step.desc}</p>
               </div>
             </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── Two interfaces ────────────────────────────────────────────────────────────
+
+function TwoInterfaces() {
+  return (
+    <section className="py-20 bg-slate-50">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-14">
+          <span className="text-xs font-semibold tracking-widest text-blue-600 uppercase">Two distinct interfaces</span>
+          <h2 className="mt-3 text-4xl font-bold text-slate-900">One platform, two experiences.</h2>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Restaurant */}
+          <div className="bg-slate-900 rounded-2xl p-8 text-white">
+            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center mb-5">
+              <BarChart3 className="w-5 h-5 text-white" />
+            </div>
+            <div className="text-xs font-semibold tracking-widest text-blue-400 uppercase mb-2">For the restaurant</div>
+            <h3 className="text-2xl font-bold mb-4">Manage your restaurant from your back-office</h3>
+            <ul className="space-y-2.5 text-slate-300 text-sm">
+              {[
+                "Secure back-office access",
+                "Dashboard: revenue, orders & tables in real time",
+                "Menu, floor plan & QR codes",
+                "Kitchen KDS, analytics & team management",
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-2.5">
+                  <Check className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <Link
+              href="/signup"
+              className="inline-flex items-center gap-2 mt-6 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 px-4 py-2.5 rounded-lg transition-colors"
+            >
+              Create my restaurant <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          {/* Client */}
+          <div className="bg-white rounded-2xl p-8 border border-slate-200">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center mb-5">
+              <QrCode className="w-5 h-5 text-blue-600" />
+            </div>
+            <div className="text-xs font-semibold tracking-widest text-blue-600 uppercase mb-2">For the end customer</div>
+            <h3 className="text-2xl font-bold text-slate-900 mb-4">Order without an app, from the table</h3>
+            <ul className="space-y-2.5 text-slate-500 text-sm">
+              {[
+                "QR menu, no app to install",
+                "Order and pay from the table",
+                "Live tracking, call waiter & customer reviews",
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-2.5">
+                  <Check className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <a
+              href="#how-it-works"
+              className="inline-flex items-center gap-2 mt-6 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+            >
+              See a client demo <ArrowRight className="w-4 h-4" />
+            </a>
           </div>
         </div>
       </div>
@@ -209,147 +263,79 @@ function Hero() {
 
 // ── Features ──────────────────────────────────────────────────────────────────
 
-const features = [
-  {
-    icon: QrCode,
-    title: "QR Code Ordering",
-    description:
-      "Generate unique QR codes for every table. Guests scan, browse your menu, and order — no app download required.",
-  },
-  {
-    icon: LayoutDashboard,
-    title: "Real-time Dashboard",
-    description:
-      "Watch orders come in live. Track revenue, monitor table status, and coordinate your kitchen from a single screen.",
-  },
-  {
-    icon: MapPin,
-    title: "Multi-location Support",
-    description:
-      "Manage multiple restaurant locations from one account. Each location gets its own menu, tables, and analytics.",
-  },
-  {
-    icon: Shield,
-    title: "Secure & Reliable",
-    description:
-      "Enterprise-grade security with Supabase. Your data is encrypted, backed up, and always available.",
-  },
-  {
-    icon: Zap,
-    title: "Instant Notifications",
-    description:
-      "Kitchen staff get real-time alerts the moment an order is placed. No missed orders, faster service.",
-  },
-  {
-    icon: Star,
-    title: "Customer Insights",
-    description:
-      "Understand your guests better. Track popular items, peak hours, and revenue trends over time.",
-  },
-];
-
 function Features() {
+  const features = [
+    {
+      icon: QrCode,
+      title: "QR Code per table",
+      desc: "Generate a unique QR for each table. Customers scan and get the menu instantly, no download needed.",
+    },
+    {
+      icon: Zap,
+      title: "Real-time orders",
+      desc: "Orders appear on the kitchen screen the moment the customer confirms. Zero delay, zero transmission errors.",
+    },
+    {
+      icon: ChefHat,
+      title: "Kitchen Display (KDS)",
+      desc: "A dedicated kitchen screen organized by course, priority, and status. Your team always knows what to prepare next.",
+    },
+    {
+      icon: CreditCard,
+      title: "Integrated payments",
+      desc: "Accept cards, Apple Pay, Google Pay, and more. Payments are processed directly at the table.",
+    },
+    {
+      icon: Palette,
+      title: "Custom branding",
+      desc: "Your logo, your colors, your fonts. The customer experience reflects your restaurant identity.",
+    },
+    {
+      icon: BarChart3,
+      title: "Analytics & reporting",
+      desc: "Track revenue, bestsellers, peak hours, and table occupancy. Export your data at any time.",
+    },
+    {
+      icon: Bell,
+      title: "Waiter call",
+      desc: "Customers can call a waiter directly from the menu. Notifications appear instantly on your dashboard.",
+    },
+    {
+      icon: Star,
+      title: "Customer reviews",
+      desc: "Collect feedback automatically after each order. Improve your service with real-time insights.",
+    },
+    {
+      icon: Shield,
+      title: "Multi-role & security",
+      desc: "Admin, manager, kitchen, waiter — each role has its own access. Your data stays protected.",
+    },
+  ];
+
   return (
-    <section id="features" className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <p className="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-3">
-            Features
-          </p>
-          <h2 className="text-4xl font-bold text-slate-900 mb-4">
-            Everything your restaurant needs
+    <section id="features" className="py-20 bg-white">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-14">
+          <span className="text-xs font-semibold tracking-widest text-blue-600 uppercase">Features</span>
+          <h2 className="mt-3 text-4xl font-bold text-slate-900">
+            Everything your restaurant needs.
           </h2>
-          <p className="text-slate-600 text-lg">
-            A complete suite of tools to streamline operations and delight your
-            guests.
+          <p className="mt-4 text-slate-500 max-w-xl mx-auto">
+            A complete platform, no mandatory third-party integrations.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((feature) => {
-            const Icon = feature.icon;
-            return (
-              <div
-                key={feature.title}
-                className="bg-slate-50 rounded-xl p-6 border border-slate-100 hover:border-slate-200 hover:shadow-sm transition-all"
-              >
-                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
-                  <Icon className="w-5 h-5 text-white" />
-                </div>
-                <h3 className="text-lg font-semibold text-slate-900 mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-slate-600 text-sm leading-relaxed">
-                  {feature.description}
-                </p>
+        <div className="grid md:grid-cols-3 gap-5">
+          {features.map(({ icon: Icon, title, desc }) => (
+            <div
+              key={title}
+              className="p-6 rounded-2xl border border-slate-100 bg-slate-50 hover:border-blue-100 hover:bg-blue-50/30 transition-colors group"
+            >
+              <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 group-hover:border-blue-200 flex items-center justify-center mb-4 shadow-sm">
+                <Icon className="w-5 h-5 text-blue-600" />
               </div>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ── How it works ──────────────────────────────────────────────────────────────
-
-const steps = [
-  {
-    number: "01",
-    title: "Create your menu",
-    description:
-      "Add your categories, dishes, prices, and photos. Publish changes instantly — no technical knowledge needed.",
-  },
-  {
-    number: "02",
-    title: "Generate QR codes",
-    description:
-      "Each table gets a unique QR code. Print and place them — guests can start ordering immediately.",
-  },
-  {
-    number: "03",
-    title: "Receive orders instantly",
-    description:
-      "Orders appear on your dashboard in real time. Confirm, prepare, and mark as ready with one click.",
-  },
-];
-
-function HowItWorks() {
-  return (
-    <section
-      id="how-it-works"
-      className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-50"
-    >
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <p className="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-3">
-            How it works
-          </p>
-          <h2 className="text-4xl font-bold text-slate-900 mb-4">
-            Up and running in minutes
-          </h2>
-          <p className="text-slate-600 text-lg">
-            Three simple steps to transform how your restaurant handles orders.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {steps.map((step, index) => (
-            <div key={step.number} className="relative">
-              {index < steps.length - 1 && (
-                <div className="hidden md:block absolute top-8 left-[calc(100%-1rem)] w-[calc(100%-2rem)] h-px bg-slate-200 z-0" />
-              )}
-              <div className="relative z-10 bg-white rounded-xl border border-slate-200 p-8 shadow-sm">
-                <div className="text-5xl font-bold text-blue-100 mb-4 leading-none">
-                  {step.number}
-                </div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-3">
-                  {step.title}
-                </h3>
-                <p className="text-slate-600 text-sm leading-relaxed">
-                  {step.description}
-                </p>
-              </div>
+              <h3 className="font-semibold text-slate-900 mb-2">{title}</h3>
+              <p className="text-sm text-slate-500 leading-relaxed">{desc}</p>
             </div>
           ))}
         </div>
@@ -360,151 +346,237 @@ function HowItWorks() {
 
 // ── Pricing ───────────────────────────────────────────────────────────────────
 
-const plans = [
-  {
-    name: "Starter",
-    price: "$29",
-    period: "/month",
-    description: "Perfect for single-location restaurants just getting started.",
-    features: [
-      "1 restaurant location",
-      "Up to 20 tables",
-      "Unlimited menu items",
-      "Real-time order dashboard",
-      "QR code generation",
-      "Email support",
-    ],
-    cta: "Start free trial",
-    highlighted: false,
-  },
-  {
-    name: "Pro",
-    price: "$79",
-    period: "/month",
-    description:
-      "For growing restaurants that need more power and customization.",
-    features: [
-      "Up to 3 locations",
-      "Unlimited tables",
-      "Custom branding",
-      "Advanced analytics",
-      "Priority support",
-      "API access",
-    ],
-    cta: "Start free trial",
-    highlighted: true,
-  },
-  {
-    name: "Enterprise",
-    price: "Custom",
-    period: "",
-    description:
-      "For restaurant groups and franchises with complex needs.",
-    features: [
-      "Unlimited locations",
-      "Dedicated account manager",
-      "Custom integrations",
-      "SLA guarantee",
-      "On-site onboarding",
-      "White-label option",
-    ],
-    cta: "Contact us",
-    highlighted: false,
-  },
-];
-
 function Pricing() {
+  const plans = [
+    {
+      name: "Starter",
+      price: "$29",
+      period: "/month",
+      description: "Get started with digital ordering",
+      popular: false,
+      features: [
+        "Up to 10 tables",
+        "QR code menu",
+        "Order management",
+        "Basic analytics",
+        "3 staff accounts",
+        "Email support",
+      ],
+    },
+    {
+      name: "Pro",
+      price: "$79",
+      period: "/month",
+      description: "For active and growing restaurants",
+      popular: true,
+      features: [
+        "Up to 30 tables",
+        "QR code menu",
+        "Order management",
+        "Kitchen display (KDS)",
+        "Customer reviews",
+        "Advanced analytics",
+        "Custom branding",
+        "10 staff accounts",
+        "Priority support",
+      ],
+    },
+    {
+      name: "Premium",
+      price: "$149",
+      period: "/month",
+      description: "For high-volume restaurants",
+      popular: false,
+      features: [
+        "Up to 100 tables",
+        "All Pro features",
+        "Multi-room & zones",
+        "Advanced multi-role",
+        "Data export",
+        "30 staff accounts",
+        "24/7 priority support",
+      ],
+    },
+    {
+      name: "Enterprise",
+      price: "Custom",
+      period: "",
+      description: "For groups & franchises",
+      popular: false,
+      features: [
+        "Unlimited tables",
+        "All Premium features",
+        "Multi-location",
+        "Group dashboard",
+        "Dedicated API",
+        "Unlimited staff accounts",
+        "Guaranteed SLA",
+      ],
+    },
+  ];
+
   return (
-    <section id="pricing" className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <p className="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-3">
-            Pricing
-          </p>
-          <h2 className="text-4xl font-bold text-slate-900 mb-4">
-            Simple, transparent pricing
-          </h2>
-          <p className="text-slate-600 text-lg">
-            No hidden fees. Start with a 14-day free trial on any plan.
+    <section id="pricing" className="py-20 bg-slate-50">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-14">
+          <span className="text-xs font-semibold tracking-widest text-blue-600 uppercase">Pricing</span>
+          <h2 className="mt-3 text-4xl font-bold text-slate-900">Simple and transparent.</h2>
+          <p className="mt-4 text-slate-500 max-w-xl mx-auto">
+            30-day free trial on all plans. No credit card required.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-4 gap-5">
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`rounded-xl border p-8 flex flex-col ${
-                plan.highlighted
-                  ? "bg-blue-600 border-blue-600 shadow-xl shadow-blue-600/20"
-                  : "bg-white border-slate-200 shadow-sm"
+              className={`rounded-2xl p-6 flex flex-col ${
+                plan.popular
+                  ? "bg-blue-600 text-white shadow-xl shadow-blue-200 ring-2 ring-blue-600"
+                  : "bg-white border border-slate-200"
               }`}
             >
-              <div className="mb-6">
-                <p
-                  className={`text-sm font-semibold mb-1 ${
-                    plan.highlighted ? "text-blue-100" : "text-slate-500"
-                  }`}
-                >
-                  {plan.name}
-                </p>
-                <div className="flex items-end gap-1 mb-3">
-                  <span
-                    className={`text-4xl font-bold ${
-                      plan.highlighted ? "text-white" : "text-slate-900"
-                    }`}
-                  >
-                    {plan.price}
+              {plan.popular && (
+                <span className="text-xs font-semibold bg-white/20 text-white px-2.5 py-1 rounded-full self-start mb-3">
+                  MOST POPULAR
+                </span>
+              )}
+              <h3 className={`font-bold text-lg ${plan.popular ? "text-white" : "text-slate-900"}`}>
+                {plan.name}
+              </h3>
+              <p className={`text-xs mt-1 ${plan.popular ? "text-blue-100" : "text-slate-500"}`}>
+                {plan.description}
+              </p>
+              <div className="mt-5 flex items-end gap-1">
+                <span className={`text-4xl font-black ${plan.popular ? "text-white" : "text-slate-900"}`}>
+                  {plan.price}
+                </span>
+                {plan.period && (
+                  <span className={`text-sm mb-1 ${plan.popular ? "text-blue-100" : "text-slate-400"}`}>
+                    {plan.period}
                   </span>
-                  {plan.period && (
-                    <span
-                      className={`text-sm mb-1.5 ${
-                        plan.highlighted ? "text-blue-100" : "text-slate-500"
-                      }`}
-                    >
-                      {plan.period}
-                    </span>
-                  )}
-                </div>
-                <p
-                  className={`text-sm ${
-                    plan.highlighted ? "text-blue-100" : "text-slate-600"
-                  }`}
-                >
-                  {plan.description}
-                </p>
+                )}
               </div>
 
-              <ul className="space-y-3 mb-8 flex-1">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-2.5">
-                    <CheckCircle
-                      className={`w-4 h-4 mt-0.5 shrink-0 ${
-                        plan.highlighted ? "text-blue-200" : "text-blue-600"
-                      }`}
+              <ul className="mt-6 space-y-2.5 flex-1">
+                {plan.features.map((f) => (
+                  <li key={f} className="flex items-center gap-2 text-sm">
+                    <Check
+                      className={`w-4 h-4 flex-shrink-0 ${plan.popular ? "text-blue-200" : "text-blue-600"}`}
                     />
-                    <span
-                      className={`text-sm ${
-                        plan.highlighted ? "text-blue-50" : "text-slate-600"
-                      }`}
-                    >
-                      {feature}
-                    </span>
+                    <span className={plan.popular ? "text-blue-50" : "text-slate-600"}>{f}</span>
                   </li>
                 ))}
               </ul>
 
               <Link
                 href={plan.name === "Enterprise" ? "/contact" : "/signup"}
-                className={`w-full text-center py-3 px-6 rounded-lg font-semibold text-sm transition-colors ${
-                  plan.highlighted
+                className={`mt-8 w-full text-center py-2.5 rounded-xl text-sm font-semibold transition-colors ${
+                  plan.popular
                     ? "bg-white text-blue-600 hover:bg-blue-50"
                     : "bg-blue-600 text-white hover:bg-blue-700"
                 }`}
               >
-                {plan.cta}
+                {plan.name === "Enterprise" ? "Contact us" : "Start for free"}
               </Link>
             </div>
           ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── Testimonials ──────────────────────────────────────────────────────────────
+
+function Testimonials() {
+  const testimonials = [
+    {
+      quote:
+        "We cut our order errors to zero the first week. Customers love ordering from their phones, and our waiters focus on service instead of running back and forth.",
+      name: "Marcus Chen",
+      role: "Owner, Golden Wok — Toronto",
+      initials: "MC",
+    },
+    {
+      quote:
+        "Setup took 8 minutes. Serva is the simplest tool we've ever added to our restaurant. Our kitchen is faster and our reviews have gone up.",
+      name: "Sophie Tremblay",
+      role: "Manager, Brasserie St-Laurent — Montréal",
+      initials: "ST",
+    },
+    {
+      quote:
+        "We run 4 locations and the group dashboard is a game changer. I can see revenue, orders, and table status across all restaurants from my phone.",
+      name: "James Okafor",
+      role: "CEO, Fork & Flame Group — New York",
+      initials: "JO",
+    },
+  ];
+
+  return (
+    <section id="testimonials" className="py-20 bg-white">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-14">
+          <span className="text-xs font-semibold tracking-widest text-blue-600 uppercase">Testimonials</span>
+          <h2 className="mt-3 text-4xl font-bold text-slate-900">They switched to Serva.</h2>
+          <p className="mt-4 text-slate-500 max-w-xl mx-auto">
+            Feedback from restaurant owners across North America.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-6">
+          {testimonials.map((t) => (
+            <div key={t.name} className="bg-slate-50 rounded-2xl p-7 border border-slate-100">
+              <div className="flex gap-1 mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                ))}
+              </div>
+              <p className="text-slate-700 text-sm leading-relaxed">&ldquo;{t.quote}&rdquo;</p>
+              <div className="flex items-center gap-3 mt-5">
+                <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold">
+                  {t.initials}
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">{t.name}</p>
+                  <p className="text-xs text-slate-500">{t.role}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── Final CTA ─────────────────────────────────────────────────────────────────
+
+function FinalCTA() {
+  return (
+    <section className="py-20 bg-blue-600">
+      <div className="max-w-3xl mx-auto px-6 text-center">
+        <h2 className="text-4xl font-bold text-white leading-tight">
+          Launch your digital restaurant today.
+        </h2>
+        <p className="mt-4 text-blue-100 text-lg">
+          30 days free, no credit card. Setup in under 10 minutes. Support included.
+        </p>
+        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Link
+            href="/signup"
+            className="flex items-center gap-2 bg-white text-blue-600 px-6 py-3.5 rounded-xl hover:bg-blue-50 transition-colors font-semibold text-base"
+          >
+            Create my account for free
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+          <Link
+            href="/login"
+            className="text-blue-100 hover:text-white transition-colors text-sm font-medium"
+          >
+            I already have an account →
+          </Link>
         </div>
       </div>
     </section>
@@ -515,105 +587,72 @@ function Pricing() {
 
 function Footer() {
   return (
-    <footer className="bg-slate-900 text-slate-400 py-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+    <footer className="bg-slate-900 text-slate-400 py-14">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <Zap className="w-4 h-4 text-white" strokeWidth={2.5} />
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center">
+                <QrCode className="w-3.5 h-3.5 text-white" />
               </div>
-              <span className="text-xl font-bold text-white tracking-tight">
-                Serva
-              </span>
-            </Link>
+              <span className="text-white font-bold">Serva</span>
+            </div>
             <p className="text-sm leading-relaxed">
-              The modern SaaS platform for restaurants that want to grow.
+              The SaaS platform for QR-code restaurant ordering. Digitize your restaurant in 10 minutes.
             </p>
           </div>
 
+          {/* Product */}
           <div>
-            <p className="text-white font-semibold text-sm mb-4">Product</p>
+            <h4 className="text-white font-semibold text-sm mb-3">Product</h4>
             <ul className="space-y-2 text-sm">
-              <li>
-                <a href="#features" className="hover:text-white transition-colors">
-                  Features
-                </a>
-              </li>
-              <li>
-                <a href="#pricing" className="hover:text-white transition-colors">
-                  Pricing
-                </a>
-              </li>
-              <li>
-                <a href="#how-it-works" className="hover:text-white transition-colors">
-                  How it works
-                </a>
-              </li>
-              <li>
-                <Link href="/changelog" className="hover:text-white transition-colors">
-                  Changelog
-                </Link>
-              </li>
+              {[
+                { label: "Features", href: "#features" },
+                { label: "Pricing", href: "#pricing" },
+                { label: "How it works", href: "#how-it-works" },
+                { label: "Testimonials", href: "#testimonials" },
+              ].map((l) => (
+                <li key={l.label}>
+                  <a href={l.href} className="hover:text-white transition-colors">{l.label}</a>
+                </li>
+              ))}
             </ul>
           </div>
 
+          {/* Access */}
           <div>
-            <p className="text-white font-semibold text-sm mb-4">Company</p>
+            <h4 className="text-white font-semibold text-sm mb-3">Access</h4>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link href="/about" className="hover:text-white transition-colors">
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog" className="hover:text-white transition-colors">
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link href="/careers" className="hover:text-white transition-colors">
-                  Careers
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="hover:text-white transition-colors">
-                  Contact
-                </Link>
-              </li>
+              {[
+                { label: "Create an account", href: "/signup" },
+                { label: "Restaurant back-office", href: "/login" },
+                { label: "Kitchen screen", href: "/login" },
+                { label: "Super admin", href: "/login" },
+              ].map((l) => (
+                <li key={l.label}>
+                  <Link href={l.href} className="hover:text-white transition-colors">{l.label}</Link>
+                </li>
+              ))}
             </ul>
           </div>
 
+          {/* Legal */}
           <div>
-            <p className="text-white font-semibold text-sm mb-4">Legal</p>
+            <h4 className="text-white font-semibold text-sm mb-3">Legal</h4>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link href="/privacy" className="hover:text-white transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/terms" className="hover:text-white transition-colors">
-                  Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link href="/security" className="hover:text-white transition-colors">
-                  Security
-                </Link>
-              </li>
+              {["Terms of use", "Privacy policy", "Legal notice", "Contact"].map((l) => (
+                <li key={l}>
+                  <a href="#" className="hover:text-white transition-colors">{l}</a>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-slate-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm">
-            &copy; {new Date().getFullYear()} Serva Technologies Inc. All rights
-            reserved.
-          </p>
-          <p className="text-sm">
-            Made for restaurants worldwide.
-          </p>
+        <div className="mt-12 pt-6 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-sm">© 2025 Serva. All rights reserved.</p>
+          <p className="text-sm">Made for restaurateurs worldwide.</p>
         </div>
       </div>
     </footer>
@@ -628,9 +667,12 @@ export default function LandingPage() {
       <Navbar />
       <main>
         <Hero />
-        <Features />
         <HowItWorks />
+        <TwoInterfaces />
+        <Features />
         <Pricing />
+        <Testimonials />
+        <FinalCTA />
       </main>
       <Footer />
     </>
