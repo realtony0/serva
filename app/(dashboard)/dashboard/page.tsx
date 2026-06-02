@@ -20,12 +20,14 @@ import { redirect } from "next/navigation";
 
 // ── Sidebar ───────────────────────────────────────────────────────────────────
 
+// NOTE: the dashboard is a server component. Per scope, its static labels are
+// kept in a single language (French) to avoid over-engineering server-side i18n.
 const navLinks = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard", active: true },
+  { icon: LayoutDashboard, label: "Tableau de bord", href: "/dashboard", active: true },
   { icon: UtensilsCrossed, label: "Menu", href: "/dashboard/menu", active: false },
   { icon: QrCode, label: "Tables & QR", href: "/dashboard/tables", active: false },
-  { icon: BarChart2, label: "Analytics", href: "/dashboard/analytics", active: false },
-  { icon: Settings, label: "Settings", href: "/dashboard/settings", active: false },
+  { icon: BarChart2, label: "Statistiques", href: "/dashboard/analytics", active: false },
+  { icon: Settings, label: "Réglages", href: "/dashboard/settings", active: false },
 ];
 
 function Sidebar() {
@@ -65,7 +67,7 @@ function Sidebar() {
       <div className="px-3 py-4 border-t border-slate-100">
         <button className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors w-full">
           <LogOut className="w-4 h-4 shrink-0" />
-          Sign out
+          Déconnexion
         </button>
       </div>
     </aside>
@@ -76,33 +78,33 @@ function Sidebar() {
 
 const stats = [
   {
-    label: "Today's Orders",
+    label: "Commandes du jour",
     value: "142",
-    delta: "+12% vs yesterday",
+    delta: "+12% vs hier",
     positive: true,
     icon: ShoppingBag,
     color: "blue",
   },
   {
-    label: "Revenue",
-    value: "$3,840",
-    delta: "+8% vs yesterday",
+    label: "Recette",
+    value: "3 840 $",
+    delta: "+8% vs hier",
     positive: true,
     icon: DollarSign,
     color: "green",
   },
   {
-    label: "Active Tables",
+    label: "Tables actives",
     value: "18 / 24",
-    delta: "6 available",
+    delta: "6 disponibles",
     positive: null,
     icon: Table2,
     color: "orange",
   },
   {
-    label: "Avg Order Value",
-    value: "$27.04",
-    delta: "+3% vs last week",
+    label: "Panier moyen",
+    value: "27,04 $",
+    delta: "+3% vs semaine dernière",
     positive: true,
     icon: TrendingUp,
     color: "purple",
@@ -161,7 +163,7 @@ const recentOrders = [
     items: "Burger, Fries, Coke",
     status: "preparing",
     amount: "$24.50",
-    time: "2 min ago",
+    time: "2 min",
   },
   {
     id: "#ORD-1020",
@@ -169,7 +171,7 @@ const recentOrders = [
     items: "Caesar Salad, Pasta",
     status: "ready",
     amount: "$32.00",
-    time: "8 min ago",
+    time: "8 min",
   },
   {
     id: "#ORD-1019",
@@ -177,7 +179,7 @@ const recentOrders = [
     items: "Steak, Wine, Tiramisu",
     status: "delivered",
     amount: "$87.00",
-    time: "15 min ago",
+    time: "15 min",
   },
   {
     id: "#ORD-1018",
@@ -185,7 +187,7 @@ const recentOrders = [
     items: "Margherita, Garlic Bread",
     status: "pending",
     amount: "$19.90",
-    time: "18 min ago",
+    time: "18 min",
   },
   {
     id: "#ORD-1017",
@@ -193,19 +195,19 @@ const recentOrders = [
     items: "Sushi Platter x2",
     status: "confirmed",
     amount: "$64.00",
-    time: "22 min ago",
+    time: "22 min",
   },
 ];
 
 type OrderStatus = "pending" | "confirmed" | "preparing" | "ready" | "delivered" | "cancelled";
 
 const statusStyles: Record<OrderStatus, { label: string; className: string }> = {
-  pending: { label: "Pending", className: "bg-slate-100 text-slate-700" },
-  confirmed: { label: "Confirmed", className: "bg-blue-50 text-blue-700" },
-  preparing: { label: "Preparing", className: "bg-orange-50 text-orange-700" },
-  ready: { label: "Ready", className: "bg-green-50 text-green-700" },
-  delivered: { label: "Delivered", className: "bg-slate-50 text-slate-500" },
-  cancelled: { label: "Cancelled", className: "bg-red-50 text-red-600" },
+  pending: { label: "En attente", className: "bg-slate-100 text-slate-700" },
+  confirmed: { label: "Confirmée", className: "bg-blue-50 text-blue-700" },
+  preparing: { label: "En préparation", className: "bg-orange-50 text-orange-700" },
+  ready: { label: "Prête", className: "bg-green-50 text-green-700" },
+  delivered: { label: "Servie", className: "bg-slate-50 text-slate-500" },
+  cancelled: { label: "Annulée", className: "bg-red-50 text-red-600" },
 };
 
 function RecentOrders() {
@@ -213,14 +215,14 @@ function RecentOrders() {
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
       <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
         <div>
-          <h2 className="text-base font-semibold text-slate-900">Recent Orders</h2>
-          <p className="text-xs text-slate-500 mt-0.5">Live updates</p>
+          <h2 className="text-base font-semibold text-slate-900">Commandes récentes</h2>
+          <p className="text-xs text-slate-500 mt-0.5">Mises à jour en direct</p>
         </div>
         <Link
           href="/dashboard/orders"
           className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700"
         >
-          View all
+          Tout voir
           <ChevronRight className="w-3.5 h-3.5" />
         </Link>
       </div>
@@ -230,19 +232,19 @@ function RecentOrders() {
           <thead>
             <tr className="border-b border-slate-100">
               <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Order
+                Commande
               </th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
                 Table
               </th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider hidden md:table-cell">
-                Items
+                Articles
               </th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Status
+                Statut
               </th>
               <th className="text-right px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Amount
+                Montant
               </th>
             </tr>
           </thead>
@@ -320,9 +322,9 @@ export default async function DashboardPage() {
         {/* Top bar */}
         <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-slate-900">Dashboard</h1>
+            <h1 className="text-xl font-bold text-slate-900">Tableau de bord</h1>
             <p className="text-sm text-slate-500 mt-0.5">
-              Welcome back,{" "}
+              Bon retour,{" "}
               <span className="font-medium text-slate-700">{displayName}</span>
             </p>
           </div>

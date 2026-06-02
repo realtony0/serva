@@ -61,6 +61,45 @@
   .animate-slide-up {
     animation: slide-up 0.4s ease-out;
   }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .bg-dot-grid {
+    background-image: radial-gradient(
+      rgba(37, 99, 235, 0.1) 1px,
+      transparent 1px
+    );
+    background-size: 22px 22px;
+  }
+
+  .bg-line-grid {
+    background-image:
+      linear-gradient(to right, rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  .animate-glow-float {
+    animation: glow-float 9s ease-in-out infinite;
+  }
+}
+
+@keyframes glow-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate3d(0, -16px, 0) scale(1.05);
+    opacity: 0.85;
+  }
 }
 
 @keyframes fade-in {

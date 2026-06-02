@@ -13,6 +13,7 @@ import {
   Bell,
   Loader2,
 } from "lucide-react";
+import { useLanguage, LanguageToggle } from "@/components/LanguageProvider";
 
 // ── Mock data (will be replaced with real Supabase fetch) ─────────────────────
 
@@ -22,10 +23,10 @@ const restaurant = {
 };
 
 const categories = [
-  { id: "starters", name: "Starters" },
-  { id: "mains", name: "Mains" },
-  { id: "desserts", name: "Desserts" },
-  { id: "drinks", name: "Drinks" },
+  { id: "starters", labelKey: "client.cat.starters" },
+  { id: "mains", labelKey: "client.cat.mains" },
+  { id: "desserts", labelKey: "client.cat.desserts" },
+  { id: "drinks", labelKey: "client.cat.drinks" },
 ];
 
 type MenuItem = {
@@ -66,12 +67,13 @@ type OrderState = "idle" | "sending" | "confirmed";
 // ── Badge ─────────────────────────────────────────────────────────────────────
 
 function Badge({ type }: { type: "popular" | "vegan" | "spicy" }) {
+  const { t } = useLanguage();
   if (type === "popular")
-    return <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">Popular</span>;
+    return <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">{t("client.badge.popular")}</span>;
   if (type === "vegan")
-    return <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-green-50 text-green-700 px-2 py-0.5 rounded-full"><Leaf className="w-2.5 h-2.5" /> Vegan</span>;
+    return <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-green-50 text-green-700 px-2 py-0.5 rounded-full"><Leaf className="w-2.5 h-2.5" /> {t("client.badge.vegan")}</span>;
   if (type === "spicy")
-    return <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-red-50 text-red-600 px-2 py-0.5 rounded-full"><Flame className="w-2.5 h-2.5" /> Spicy</span>;
+    return <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-red-50 text-red-600 px-2 py-0.5 rounded-full"><Flame className="w-2.5 h-2.5" /> {t("client.badge.spicy")}</span>;
   return null;
 }
 
@@ -83,11 +85,12 @@ function MenuCard({ item, quantity, onAdd, onRemove }: {
   onAdd: () => void;
   onRemove: () => void;
 }) {
+  const { t } = useLanguage();
   const emoji = item.categoryId === "drinks" ? "🥤" : item.categoryId === "desserts" ? "🍰" : "🍽️";
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-col gap-3 shadow-sm">
+    <div className="bg-white rounded-2xl border border-slate-200 p-4 flex flex-col gap-3 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-start gap-3">
-        <div className="w-16 h-16 bg-slate-100 rounded-lg shrink-0 flex items-center justify-center text-2xl select-none">
+        <div className="w-16 h-16 bg-slate-100 rounded-xl shrink-0 flex items-center justify-center text-2xl select-none">
           {emoji}
         </div>
         <div className="flex-1 min-w-0">
@@ -101,8 +104,8 @@ function MenuCard({ item, quantity, onAdd, onRemove }: {
       <div className="flex items-center justify-between">
         <p className="text-base font-bold text-slate-900">${item.price.toFixed(2)}</p>
         {quantity === 0 ? (
-          <button onClick={onAdd} className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors">
-            <Plus className="w-3.5 h-3.5" /> Add
+          <button onClick={onAdd} className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors active:scale-95">
+            <Plus className="w-3.5 h-3.5" /> {t("client.add")}
           </button>
         ) : (
           <div className="flex items-center gap-2">
@@ -131,28 +134,29 @@ function CartDrawer({ items, onClose, onAdd, onRemove, tableId, onPlaceOrder, or
   onPlaceOrder: (notes: string) => void;
   orderState: OrderState;
 }) {
+  const { t } = useLanguage();
   const [notes, setNotes] = useState("");
   const total = items.reduce((s, i) => s + i.price * i.quantity, 0);
   const itemCount = items.reduce((s, i) => s + i.quantity, 0);
 
-  // Order confirmed state
+  // Order confirmed state — NOTE: no payment step, orders go straight to the kitchen.
   if (orderState === "confirmed") {
     return (
       <>
         <div className="fixed inset-0 bg-black/40 z-40" />
-        <div className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl p-8 flex flex-col items-center text-center">
+        <div className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl p-8 flex flex-col items-center text-center animate-slide-up">
           <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
             <CheckCircle2 className="w-8 h-8 text-green-600" />
           </div>
-          <h2 className="text-xl font-bold text-slate-900 mb-2">Order placed!</h2>
-          <p className="text-slate-500 text-sm mb-1">Your order is being prepared.</p>
+          <h2 className="text-xl font-bold text-slate-900 mb-2">{t("client.placed")}</h2>
+          <p className="text-slate-500 text-sm mb-1">{t("client.preparing")}</p>
           <p className="text-slate-500 text-sm mb-6">
             <Clock className="w-3.5 h-3.5 inline mr-1" />
-            The kitchen received it instantly.
+            {t("client.kitchenGot")}
           </p>
-          <p className="text-xs text-blue-600 font-medium">Table {tableId}</p>
+          <p className="text-xs text-blue-600 font-medium">{t("client.table")} {tableId}</p>
           <button onClick={onClose} className="mt-6 w-full bg-blue-600 text-white rounded-xl py-3 font-semibold text-sm hover:bg-blue-700 transition-colors">
-            Continue browsing
+            {t("client.continue")}
           </button>
         </div>
       </>
@@ -162,9 +166,9 @@ function CartDrawer({ items, onClose, onAdd, onRemove, tableId, onPlaceOrder, or
   return (
     <>
       <div className="fixed inset-0 bg-black/40 z-40" onClick={onClose} />
-      <div className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl max-h-[85vh] flex flex-col">
+      <div className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl max-h-[85vh] flex flex-col animate-slide-up">
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-          <h2 className="text-base font-bold text-slate-900">Your order · {itemCount} {itemCount === 1 ? "item" : "items"}</h2>
+          <h2 className="text-base font-bold text-slate-900">{t("client.yourOrder")} · {itemCount} {itemCount === 1 ? t("client.item") : t("client.items")}</h2>
           <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
             <X className="w-4 h-4" />
           </button>
@@ -175,7 +179,7 @@ function CartDrawer({ items, onClose, onAdd, onRemove, tableId, onPlaceOrder, or
             <div key={item.menuItemId} className="flex items-center gap-3 py-2">
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-slate-900 truncate">{item.name}</p>
-                <p className="text-xs text-slate-500">${item.price.toFixed(2)} each</p>
+                <p className="text-xs text-slate-500">${item.price.toFixed(2)} {t("client.each")}</p>
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <button onClick={() => onRemove(item.menuItemId)} className="w-6 h-6 flex items-center justify-center bg-slate-100 hover:bg-slate-200 rounded-md transition-colors">
@@ -198,7 +202,7 @@ function CartDrawer({ items, onClose, onAdd, onRemove, tableId, onPlaceOrder, or
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Special requests or allergies…"
+            placeholder={t("client.notes")}
             rows={2}
             className="w-full text-sm text-slate-700 placeholder-slate-400 border border-slate-200 rounded-xl px-3 py-2 resize-none focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
           />
@@ -206,7 +210,7 @@ function CartDrawer({ items, onClose, onAdd, onRemove, tableId, onPlaceOrder, or
 
         <div className="px-5 py-4 border-t border-slate-100">
           <div className="flex justify-between text-base font-bold text-slate-900 mb-3">
-            <span>Total</span>
+            <span>{t("client.total")}</span>
             <span>${total.toFixed(2)}</span>
           </div>
 
@@ -216,14 +220,14 @@ function CartDrawer({ items, onClose, onAdd, onRemove, tableId, onPlaceOrder, or
             className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold text-sm py-4 rounded-xl transition-colors"
           >
             {orderState === "sending" ? (
-              <><Loader2 className="w-4 h-4 animate-spin" /> Sending to kitchen…</>
+              <><Loader2 className="w-4 h-4 animate-spin" /> {t("client.sending")}</>
             ) : (
-              <>Send order to kitchen</>
+              <>{t("client.sendOrder")}</>
             )}
           </button>
 
           <p className="text-center text-xs text-slate-400 mt-2">
-            Table {tableId} · A server will bring your order
+            {t("client.table")} {tableId} · {t("client.serverWillBring")}
           </p>
         </div>
       </div>
@@ -234,6 +238,7 @@ function CartDrawer({ items, onClose, onAdd, onRemove, tableId, onPlaceOrder, or
 // ── Waiter call button ────────────────────────────────────────────────────────
 
 function CallWaiterButton({ tableId }: { tableId: string }) {
+  const { t } = useLanguage();
   const [called, setCalled] = useState(false);
 
   function handleCall() {
@@ -251,7 +256,7 @@ function CallWaiterButton({ tableId }: { tableId: string }) {
       }`}
     >
       <Bell className={`w-3.5 h-3.5 ${called ? "text-green-600" : "text-slate-500"}`} />
-      {called ? "Waiter notified!" : "Call waiter"}
+      {called ? t("client.waiterNotified") : t("client.callWaiter")}
     </button>
   );
 }
@@ -263,6 +268,7 @@ export default function TableMenuPage({
 }: {
   params: Promise<{ restaurantSlug: string; tableId: string }>;
 }) {
+  const { t } = useLanguage();
   const { tableId } = use(params);
   const [activeCategory, setActiveCategory] = useState(categories[0].id);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -294,7 +300,8 @@ export default function TableMenuPage({
 
   async function placeOrder(notes: string) {
     setOrderState("sending");
-    // TODO: POST to /api/orders with cart + tableId when anon key is configured
+    // TODO: POST to /api/orders with cart + tableId when anon key is configured.
+    // No payment step — orders go straight to the kitchen.
     await new Promise((r) => setTimeout(r, 1200));
     setOrderState("confirmed");
     setCart([]);
@@ -311,10 +318,13 @@ export default function TableMenuPage({
     <div className="min-h-screen bg-slate-50 pb-28">
       {/* Header */}
       <div className="bg-white border-b border-slate-200 sticky top-0 z-30">
-        <div className="max-w-lg mx-auto px-4 py-4">
-          <h1 className="text-lg font-bold text-slate-900">{restaurant.name}</h1>
-          <p className="text-xs text-slate-500 mt-0.5">{restaurant.description}</p>
-          <p className="text-xs font-semibold text-blue-600 mt-1">Table {tableId}</p>
+        <div className="max-w-lg mx-auto px-4 py-4 flex items-start justify-between gap-3">
+          <div>
+            <h1 className="text-lg font-bold text-slate-900">{restaurant.name}</h1>
+            <p className="text-xs text-slate-500 mt-0.5">{restaurant.description}</p>
+            <p className="text-xs font-semibold text-blue-600 mt-1">{t("client.table")} {tableId}</p>
+          </div>
+          <LanguageToggle />
         </div>
 
         {/* Category tabs */}
@@ -327,7 +337,7 @@ export default function TableMenuPage({
                 activeCategory === cat.id ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
-              {cat.name}
+              {t(cat.labelKey)}
             </button>
           ))}
         </div>
@@ -365,7 +375,7 @@ export default function TableMenuPage({
                   {totalItems}
                 </span>
               </div>
-              <span>View order</span>
+              <span>{t("client.viewOrder")}</span>
             </div>
             <span>${cart.reduce((s, i) => s + i.price * i.quantity, 0).toFixed(2)}</span>
           </button>
