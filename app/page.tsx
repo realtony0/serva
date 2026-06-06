@@ -259,6 +259,56 @@ function Hero() {
   );
 }
 
+// ── Benefit blocks ────────────────────────────────────────────────────────────
+
+function BenefitBlocks() {
+  const { t } = useLanguage();
+  const blocks = [
+    {
+      kicker: "bloc.01.kicker",
+      title: "bloc.01.title",
+      body: "bloc.01.body",
+      features: ["bloc.01.f1", "bloc.01.f2", "bloc.01.f3"],
+    },
+    {
+      kicker: "bloc.02.kicker",
+      title: "bloc.02.title",
+      body: "bloc.02.body",
+      features: [],
+    },
+  ];
+
+  return (
+    <section className="py-24 bg-white">
+      <div className="max-w-3xl mx-auto px-6 space-y-16">
+        {blocks.map((b) => (
+          <div key={b.kicker} className="border-t border-slate-100 pt-12 first:border-t-0 first:pt-0">
+            <span className="inline-flex items-center gap-2 text-[11px] font-bold tracking-widest text-blue-600 uppercase bg-blue-50 px-3 py-1.5 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+              {t(b.kicker)}
+            </span>
+            <h2 className="mt-5 text-3xl sm:text-4xl font-black text-slate-900 leading-tight tracking-tight">
+              {t(b.title)}
+            </h2>
+            <p className="mt-4 text-slate-500 leading-relaxed">{t(b.body)}</p>
+
+            {b.features.length > 0 && (
+              <ul className="mt-7 space-y-3">
+                {b.features.map((key) => (
+                  <li key={key} className="flex items-center gap-3 text-sm font-medium text-slate-700">
+                    <span className="w-4 h-4 rounded-full border-2 border-blue-500 shrink-0" />
+                    {t(key)}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 // ── How it works ──────────────────────────────────────────────────────────────
 
 function HowItWorks() {
@@ -571,6 +621,7 @@ export default function LandingPage() {
       <Navbar />
       <main>
         <Hero />
+        <BenefitBlocks />
         <HowItWorks />
         <TwoInterfaces />
         <Features />

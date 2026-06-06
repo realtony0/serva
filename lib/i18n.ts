@@ -66,6 +66,19 @@ export const translations: Record<Locale, Dict> = {
     "how.s4.desc":
       "Le repas terminé, le client est invité à noter son expérience. Un retour précieux, sans effort.",
 
+    /* ── Benefit blocks ── */
+    "bloc.01.kicker": "Bloc 01 · L'argument business",
+    "bloc.01.title": "Tournez plus de tables, sans agrandir la salle.",
+    "bloc.01.body":
+      "Vos clients commandent dès qu'ils s'assoient et suivent leur repas en direct — sans attendre un serveur, sans lever la main. Le service va plus vite, vous accueillez plus de couverts, vous encaissez plus sur le même nombre de places.",
+    "bloc.01.f1": "Commande dès l'arrivée à table",
+    "bloc.01.f2": "Suivi de la préparation en temps réel",
+    "bloc.01.f3": "Plus de couverts servis par service",
+    "bloc.02.kicker": "Bloc 02 · Ce que les clients adorent",
+    "bloc.02.title": "Une expérience que vos clients trouvent bluffante.",
+    "bloc.02.body":
+      "Ils scannent, découvrent le menu en photos, personnalisent chaque plat, suivent la préparation en direct et appellent un serveur d'un simple geste. Fluide, moderne, sans friction. Ils repartent en se disant : « ce resto est en avance. »",
+
     /* ── Two interfaces ── */
     "two.kicker": "La plateforme",
     "two.title": "Pensée pour deux mondes.",
@@ -250,6 +263,19 @@ export const translations: Record<Locale, Dict> = {
       "Once the meal is done, customers get a quick prompt to rate their experience. Effortless feedback for you.",
 
     /* ── Two interfaces ── */
+    /* ── Benefit blocks ── */
+    "bloc.01.kicker": "Block 01 · The business case",
+    "bloc.01.title": "Turn more tables, without growing the room.",
+    "bloc.01.body":
+      "Guests order the moment they sit down and follow their meal live — no waiting on a server, no waving anyone down. Service moves faster, you seat more guests, and you bring in more revenue from the same number of tables.",
+    "bloc.01.f1": "Ordering starts the second they sit down",
+    "bloc.01.f2": "Live tracking of the kitchen prep",
+    "bloc.01.f3": "More covers served per shift",
+    "bloc.02.kicker": "Block 02 · What guests love",
+    "bloc.02.title": "An experience your guests find genuinely impressive.",
+    "bloc.02.body":
+      "They scan, browse a menu in photos, customize every dish, follow the prep live, and call a server with a single tap. Smooth, modern, frictionless. They walk out thinking: \"this place is ahead of the curve.\"",
+
     "two.kicker": "Platform",
     "two.title": "Built for two worlds.",
     "two.subtitle":
