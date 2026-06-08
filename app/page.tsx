@@ -204,11 +204,6 @@ function Hero() {
       <div className="relative max-w-7xl mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-14 items-center">
           <div>
-            <div className="inline-flex items-center gap-2 text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
-              {t("hero.badge")}
-            </div>
-
             <h1 className="text-5xl font-black text-slate-900 leading-[1.1] tracking-tight text-balance">
               {t("hero.title.a")}<br />
               <span className="text-blue-600">{t("hero.title.b")}<br />{t("hero.title.c")}</span>
@@ -719,7 +714,6 @@ function Footer() {
 
         <div className="mt-12 pt-6 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm">© {new Date().getFullYear()} Serva. {t("footer.rights")}</p>
-          <p className="text-sm">{t("footer.worldwide")}</p>
         </div>
       </div>
     </footer>
