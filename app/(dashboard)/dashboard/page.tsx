@@ -17,16 +17,15 @@ import {
 import Link from "next/link";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
+import type { OrderStatus } from "@/lib/types";
 
 // ── Sidebar ───────────────────────────────────────────────────────────────────
 
-// NOTE: the dashboard is a server component. Per scope, its static labels are
-// kept in a single language (French) to avoid over-engineering server-side i18n.
 const navLinks = [
   { icon: LayoutDashboard, label: "Tableau de bord", href: "/dashboard", active: true },
   { icon: UtensilsCrossed, label: "Menu", href: "/dashboard/menu", active: false },
   { icon: QrCode, label: "Tables & QR", href: "/dashboard/tables", active: false },
-  { icon: BarChart2, label: "Statistiques", href: "/dashboard/analytics", active: false },
+  { icon: BarChart2, label: "Commandes", href: "/dashboard/orders", active: false },
   { icon: Settings, label: "Réglages", href: "/dashboard/settings", active: false },
 ];
 
@@ -76,130 +75,49 @@ function Sidebar() {
 
 // ── Stats cards ───────────────────────────────────────────────────────────────
 
-const stats = [
-  {
-    label: "Commandes du jour",
-    value: "142",
-    delta: "+12% vs hier",
-    positive: true,
-    icon: ShoppingBag,
-    color: "blue",
-  },
-  {
-    label: "Recette",
-    value: "3 840 $",
-    delta: "+8% vs hier",
-    positive: true,
-    icon: DollarSign,
-    color: "green",
-  },
-  {
-    label: "Tables actives",
-    value: "18 / 24",
-    delta: "6 disponibles",
-    positive: null,
-    icon: Table2,
-    color: "orange",
-  },
-  {
-    label: "Panier moyen",
-    value: "27,04 $",
-    delta: "+3% vs semaine dernière",
-    positive: true,
-    icon: TrendingUp,
-    color: "purple",
-  },
-];
-
-const colorMap: Record<string, { bg: string; text: string; icon: string }> = {
-  blue: { bg: "bg-blue-50", text: "text-blue-700", icon: "text-blue-600" },
-  green: { bg: "bg-green-50", text: "text-green-700", icon: "text-green-600" },
-  orange: { bg: "bg-orange-50", text: "text-orange-700", icon: "text-orange-600" },
-  purple: { bg: "bg-purple-50", text: "text-purple-700", icon: "text-purple-600" },
+const colorMap: Record<string, { bg: string; icon: string }> = {
+  blue: { bg: "bg-blue-50", icon: "text-blue-600" },
+  green: { bg: "bg-green-50", icon: "text-green-600" },
+  orange: { bg: "bg-orange-50", icon: "text-orange-600" },
+  purple: { bg: "bg-purple-50", icon: "text-purple-600" },
 };
 
-function StatsGrid() {
+interface StatCardProps {
+  label: string;
+  value: string;
+  delta: string;
+  positive: boolean | null;
+  icon: React.ElementType;
+  color: string;
+}
+
+function StatCard({ label, value, delta, positive, icon: Icon, color }: StatCardProps) {
+  const c = colorMap[color];
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-      {stats.map((stat) => {
-        const Icon = stat.icon;
-        const c = colorMap[stat.color];
-        return (
-          <div
-            key={stat.label}
-            className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm"
-          >
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-sm font-medium text-slate-600">{stat.label}</p>
-              <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${c.bg}`}>
-                <Icon className={`w-4.5 h-4.5 ${c.icon}`} />
-              </div>
-            </div>
-            <p className="text-2xl font-bold text-slate-900 mb-1">{stat.value}</p>
-            <p
-              className={`text-xs font-medium ${
-                stat.positive === true
-                  ? "text-green-600"
-                  : stat.positive === false
-                  ? "text-red-500"
-                  : "text-slate-500"
-              }`}
-            >
-              {stat.delta}
-            </p>
-          </div>
-        );
-      })}
+    <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-sm font-medium text-slate-600">{label}</p>
+        <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${c.bg}`}>
+          <Icon className={`w-4 h-4 ${c.icon}`} />
+        </div>
+      </div>
+      <p className="text-2xl font-bold text-slate-900 mb-1">{value}</p>
+      <p
+        className={`text-xs font-medium ${
+          positive === true
+            ? "text-green-600"
+            : positive === false
+            ? "text-red-500"
+            : "text-slate-500"
+        }`}
+      >
+        {delta}
+      </p>
     </div>
   );
 }
 
 // ── Recent orders table ───────────────────────────────────────────────────────
-
-const recentOrders = [
-  {
-    id: "#ORD-1021",
-    table: "Table 4",
-    items: "Burger, Fries, Coke",
-    status: "preparing",
-    amount: "$24.50",
-    time: "2 min",
-  },
-  {
-    id: "#ORD-1020",
-    table: "Table 9",
-    items: "Caesar Salad, Pasta",
-    status: "ready",
-    amount: "$32.00",
-    time: "8 min",
-  },
-  {
-    id: "#ORD-1019",
-    table: "Table 12",
-    items: "Steak, Wine, Tiramisu",
-    status: "delivered",
-    amount: "$87.00",
-    time: "15 min",
-  },
-  {
-    id: "#ORD-1018",
-    table: "Table 2",
-    items: "Margherita, Garlic Bread",
-    status: "pending",
-    amount: "$19.90",
-    time: "18 min",
-  },
-  {
-    id: "#ORD-1017",
-    table: "Table 7",
-    items: "Sushi Platter x2",
-    status: "confirmed",
-    amount: "$64.00",
-    time: "22 min",
-  },
-];
-
-type OrderStatus = "pending" | "confirmed" | "preparing" | "ready" | "delivered" | "cancelled";
 
 const statusStyles: Record<OrderStatus, { label: string; className: string }> = {
   pending: { label: "En attente", className: "bg-slate-100 text-slate-700" },
@@ -210,13 +128,29 @@ const statusStyles: Record<OrderStatus, { label: string; className: string }> = 
   cancelled: { label: "Annulée", className: "bg-red-50 text-red-600" },
 };
 
-function RecentOrders() {
+function timeAgo(dateStr: string): string {
+  const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
+  if (diff < 60) return `${diff}s`;
+  if (diff < 3600) return `${Math.floor(diff / 60)} min`;
+  return `${Math.floor(diff / 3600)}h`;
+}
+
+interface RecentOrderRow {
+  id: string;
+  table_name: string | null;
+  status: string;
+  total: number;
+  currency: string;
+  created_at: string;
+}
+
+function RecentOrders({ orders }: { orders: RecentOrderRow[] }) {
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
       <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
         <div>
           <h2 className="text-base font-semibold text-slate-900">Commandes récentes</h2>
-          <p className="text-xs text-slate-500 mt-0.5">Mises à jour en direct</p>
+          <p className="text-xs text-slate-500 mt-0.5">10 dernières commandes</p>
         </div>
         <Link
           href="/dashboard/orders"
@@ -228,70 +162,61 @@ function RecentOrders() {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-slate-100">
-              <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Commande
-              </th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Table
-              </th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider hidden md:table-cell">
-                Articles
-              </th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Statut
-              </th>
-              <th className="text-right px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Montant
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-50">
-            {recentOrders.map((order) => {
-              const s = statusStyles[order.status as OrderStatus];
-              return (
-                <tr
-                  key={order.id}
-                  className="hover:bg-slate-50/50 transition-colors"
-                >
-                  <td className="px-6 py-4">
-                    <p className="text-sm font-semibold text-slate-900">
-                      {order.id}
-                    </p>
-                    <p className="text-xs text-slate-400 mt-0.5 flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      {order.time}
-                    </p>
-                  </td>
-                  <td className="px-4 py-4">
-                    <p className="text-sm font-medium text-slate-700">
-                      {order.table}
-                    </p>
-                  </td>
-                  <td className="px-4 py-4 hidden md:table-cell">
-                    <p className="text-sm text-slate-500 truncate max-w-[200px]">
-                      {order.items}
-                    </p>
-                  </td>
-                  <td className="px-4 py-4">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${s.className}`}
-                    >
-                      {s.label}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <p className="text-sm font-semibold text-slate-900">
-                      {order.amount}
-                    </p>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        {orders.length === 0 ? (
+          <p className="text-sm text-slate-400 text-center py-10">Aucune commande pour l&apos;instant.</p>
+        ) : (
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-slate-100">
+                <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  Commande
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  Table
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  Statut
+                </th>
+                <th className="text-right px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  Montant
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-50">
+              {orders.map((order) => {
+                const s = statusStyles[order.status as OrderStatus] ?? statusStyles.pending;
+                return (
+                  <tr key={order.id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-6 py-4">
+                      <p className="text-sm font-semibold text-slate-900">
+                        #{order.id.slice(-6).toUpperCase()}
+                      </p>
+                      <p className="text-xs text-slate-400 mt-0.5 flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {timeAgo(order.created_at)}
+                      </p>
+                    </td>
+                    <td className="px-4 py-4">
+                      <p className="text-sm font-medium text-slate-700">
+                        {order.table_name ?? "—"}
+                      </p>
+                    </td>
+                    <td className="px-4 py-4">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${s.className}`}>
+                        {s.label}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <p className="text-sm font-semibold text-slate-900">
+                        {order.total.toFixed(2)} {order.currency}
+                      </p>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
@@ -309,17 +234,87 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  const displayName =
-    user.user_metadata?.restaurant_name ??
-    user.email?.split("@")[0] ??
-    "Restaurant";
+  const { data: restaurant } = await supabase
+    .from("restaurants")
+    .select("id, name, currency")
+    .eq("owner_id", user.id)
+    .single();
+
+  if (!restaurant) {
+    redirect("/dashboard/onboarding");
+  }
+
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+
+  const { data: todayOrders } = await supabase
+    .from("orders")
+    .select("id, total, status")
+    .eq("restaurant_id", restaurant.id)
+    .gte("created_at", todayStart.toISOString());
+
+  const orderCount = todayOrders?.length ?? 0;
+  const revenue = todayOrders?.reduce((sum, o) => sum + (o.total ?? 0), 0) ?? 0;
+  const avgOrder = orderCount > 0 ? revenue / orderCount : 0;
+
+  const { data: allTables } = await supabase
+    .from("tables")
+    .select("id, status")
+    .eq("restaurant_id", restaurant.id);
+
+  const totalTables = allTables?.length ?? 0;
+  const occupiedTables = allTables?.filter((t) => t.status === "occupied").length ?? 0;
+
+  const { data: recentOrders } = await supabase
+    .from("orders")
+    .select("id, table_name, status, total, currency, created_at")
+    .eq("restaurant_id", restaurant.id)
+    .order("created_at", { ascending: false })
+    .limit(10);
+
+  const displayName = restaurant.name ?? user.email?.split("@")[0] ?? "Restaurant";
+  const currency = restaurant.currency ?? "CAD";
+
+  const statsData: StatCardProps[] = [
+    {
+      label: "Commandes du jour",
+      value: String(orderCount),
+      delta: orderCount === 0 ? "Aucune commande" : `${orderCount} commande${orderCount > 1 ? "s" : ""}`,
+      positive: null,
+      icon: ShoppingBag,
+      color: "blue",
+    },
+    {
+      label: "Recette du jour",
+      value: `${revenue.toFixed(2)} ${currency}`,
+      delta: orderCount === 0 ? "Aucune recette" : `${orderCount} commande${orderCount > 1 ? "s" : ""}`,
+      positive: null,
+      icon: DollarSign,
+      color: "green",
+    },
+    {
+      label: "Tables actives",
+      value: totalTables === 0 ? "—" : `${occupiedTables} / ${totalTables}`,
+      delta: totalTables === 0 ? "Aucune table" : `${totalTables - occupiedTables} disponible${totalTables - occupiedTables !== 1 ? "s" : ""}`,
+      positive: null,
+      icon: Table2,
+      color: "orange",
+    },
+    {
+      label: "Panier moyen",
+      value: orderCount === 0 ? "—" : `${avgOrder.toFixed(2)} ${currency}`,
+      delta: "Aujourd'hui",
+      positive: null,
+      icon: TrendingUp,
+      color: "purple",
+    },
+  ];
 
   return (
     <div className="flex min-h-screen bg-slate-50">
       <Sidebar />
 
       <div className="flex-1 min-w-0">
-        {/* Top bar */}
         <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold text-slate-900">Tableau de bord</h1>
@@ -341,10 +336,13 @@ export default async function DashboardPage() {
           </div>
         </header>
 
-        {/* Content */}
         <main className="p-6 space-y-6">
-          <StatsGrid />
-          <RecentOrders />
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            {statsData.map((stat) => (
+              <StatCard key={stat.label} {...stat} />
+            ))}
+          </div>
+          <RecentOrders orders={recentOrders ?? []} />
         </main>
       </div>
     </div>

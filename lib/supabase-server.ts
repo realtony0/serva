@@ -1,15 +1,15 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import type { Database } from "./types";
 
 /**
  * Server client — use in Server Components, Route Handlers, and Server Actions.
  * Must be called inside an async context because it awaits the cookie store.
  */
-export async function createServerSupabaseClient() {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function createServerSupabaseClient(): Promise<ReturnType<typeof createServerClient<any>>> {
   const cookieStore = await cookies();
 
-  return createServerClient<Database>(
+  return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
