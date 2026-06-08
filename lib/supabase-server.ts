@@ -5,8 +5,7 @@ import { cookies } from "next/headers";
  * Server client — use in Server Components, Route Handlers, and Server Actions.
  * Must be called inside an async context because it awaits the cookie store.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function createServerSupabaseClient(): Promise<ReturnType<typeof createServerClient<any>>> {
+export async function createServerSupabaseClient() {
   const cookieStore = await cookies();
 
   return createServerClient(
