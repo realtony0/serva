@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useState, useRef, useEffect } from "react";
 import {
   ShoppingCart,
   Plus,
@@ -12,6 +12,8 @@ import {
   Clock,
   Bell,
   Loader2,
+  MessageCircle,
+  Send,
 } from "lucide-react";
 import { useLanguage, LanguageToggle } from "@/components/LanguageProvider";
 
@@ -394,6 +396,130 @@ export default function TableMenuPage({
           orderState={orderState}
         />
       )}
+
+      {/* AI Chatbot */}
+      <ChatBot restaurantName={restaurant.name} menuItems={menuItems} />
     </div>
+  );
+}
+
+// ── ChatBot ───────────────────────────────────────────────────────────────────
+
+type ChatMessage = { role: "user" | "assistant"; content: string };
+
+function ChatBot({ restaurantName, menuItems }: { restaurantName: string; menuItems: MenuItem[] }) {
+  const { t } = useLanguage();
+  const [open, setOpen] = useState(false);
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    { role: "assistant", content: t("chat.welcome") },
+  ]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  async function sendMessage() {
+    const text = input.trim();
+    if (!text || loading) return;
+    setInput("");
+    const newMessages: ChatMessage[] = [...messages, { role: "user", content: text }];
+    setMessages(newMessages);
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: newMessages,
+          menu: menuItems.map((m) => ({
+            name: m.name,
+            description: m.description,
+            price: m.price,
+          })),
+          restaurantName,
+        }),
+      });
+      const data = await res.json();
+      setMessages([...newMessages, { role: "assistant", content: data.reply }]);
+    } catch {
+      setMessages([...newMessages, { role: "assistant", content: "Désolé, une erreur est survenue." }]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <>
+      {/* Toggle button */}
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="fixed bottom-24 right-4 z-40 w-12 h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-colors"
+        aria-label="Chat"
+      >
+        {open ? <X className="w-5 h-5" /> : <MessageCircle className="w-5 h-5" />}
+      </button>
+
+      {/* Chat window */}
+      {open && (
+        <div className="fixed bottom-40 right-4 z-40 w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+          {/* Header */}
+          <div className="bg-blue-600 px-4 py-3 flex items-center gap-2">
+            <div className="w-7 h-7 bg-white/20 rounded-full flex items-center justify-center">
+              <MessageCircle className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <p className="text-white text-sm font-semibold">{t("chat.title")}</p>
+              <p className="text-blue-100 text-xs">{t("chat.subtitle")}</p>
+            </div>
+          </div>
+
+          {/* Messages */}
+          <div className="flex-1 overflow-y-auto p-3 space-y-2 max-h-64">
+            {messages.map((msg, i) => (
+              <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                <div className={`max-w-[85%] px-3 py-2 rounded-xl text-sm leading-relaxed ${
+                  msg.role === "user"
+                    ? "bg-blue-600 text-white rounded-br-sm"
+                    : "bg-slate-100 text-slate-800 rounded-bl-sm"
+                }`}>
+                  {msg.content}
+                </div>
+              </div>
+            ))}
+            {loading && (
+              <div className="flex justify-start">
+                <div className="bg-slate-100 px-3 py-2 rounded-xl rounded-bl-sm">
+                  <Loader2 className="w-4 h-4 text-slate-400 animate-spin" />
+                </div>
+              </div>
+            )}
+            <div ref={bottomRef} />
+          </div>
+
+          {/* Input */}
+          <div className="p-3 border-t border-slate-100 flex gap-2">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+              placeholder={t("chat.placeholder")}
+              className="flex-1 text-sm px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              onClick={sendMessage}
+              disabled={!input.trim() || loading}
+              className="w-9 h-9 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 text-white rounded-xl flex items-center justify-center transition-colors shrink-0"
+            >
+              <Send className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
