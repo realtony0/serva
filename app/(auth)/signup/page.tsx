@@ -107,7 +107,7 @@ export default function SignupPage() {
               Start your free trial
             </h1>
             <p className="text-slate-600 text-sm">
-              14 days free. No credit card required.
+              7 days free. No credit card required.
             </p>
           </div>
 
