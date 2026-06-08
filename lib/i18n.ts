@@ -124,6 +124,22 @@ export const translations: Record<Locale, Dict> = {
     "feat.roles.t": "Rôles & sécurité",
     "feat.roles.d": "Admin, manager, cuisine, serveur — un accès par rôle. Vos données restent les vôtres.",
 
+    /* ── AI section ── */
+    "ai.kicker": "Intelligence artificielle",
+    "ai.title": "Un assistant IA qui connaît votre menu par cœur.",
+    "ai.subtitle": "Chaque table dispose d'un assistant intelligent. Il répond aux questions, détecte les allergènes, recommande des plats — et libère vos serveurs pour ce qui compte vraiment.",
+    "ai.f1.title": "Allergènes & régimes",
+    "ai.f1.desc": "« Sans gluten ? Sans lactose ? » — réponse instantanée, précise, à toute heure.",
+    "ai.f2.title": "Recommandations personnalisées",
+    "ai.f2.desc": "« Je veux quelque chose de léger » — l'IA suggère les bons plats selon les goûts du client.",
+    "ai.f3.title": "Aide à la commande",
+    "ai.f3.desc": "Composition du repas, taille des portions, suggestions d'accompagnements — sans mobiliser un serveur.",
+    "ai.chat.q1": "Est-ce que le burger contient du gluten ?",
+    "ai.chat.a1": "Le Classic Burger est servi dans un pain brioché qui contient du gluten. Je vous recommande la Salade César ou le Saumon grillé — tous deux sans gluten. 🌿",
+    "ai.chat.q2": "Qu'est-ce qui est populaire ce soir ?",
+    "ai.chat.a2": "Le Ribeye Steak et la Wild Mushroom Pasta sont nos best-sellers du moment ! Le steak est parfait pour un repas généreux, la pasta idéale si vous préférez quelque chose de plus léger. 🍝",
+    "ai.cta": "Voir la démo",
+
     /* ── Testimonials ── */
     "test.kicker": "Témoignages",
     "test.title.a": "Vrais restaurants.",
@@ -323,6 +339,22 @@ export const translations: Record<Locale, Dict> = {
     "feat.reviews.d": "Ratings collected automatically after each meal. Improve service with real data.",
     "feat.roles.t": "Roles & security",
     "feat.roles.d": "Admin, manager, kitchen, server — custom access per role. Your data stays yours.",
+
+    /* ── AI section ── */
+    "ai.kicker": "Artificial intelligence",
+    "ai.title": "An AI assistant that knows your menu inside out.",
+    "ai.subtitle": "Every table gets an intelligent assistant. It answers questions, spots allergens, recommends dishes — and frees your staff to focus on what matters.",
+    "ai.f1.title": "Allergens & diets",
+    "ai.f1.desc": "\"Gluten-free? Dairy-free?\" — instant, accurate answers, around the clock.",
+    "ai.f2.title": "Personalized recommendations",
+    "ai.f2.desc": "\"I want something light\" — the AI suggests the right dishes based on the guest's preferences.",
+    "ai.f3.title": "Order assistance",
+    "ai.f3.desc": "Meal composition, portion sizes, side suggestions — without pulling a server away.",
+    "ai.chat.q1": "Does the burger contain gluten?",
+    "ai.chat.a1": "The Classic Burger is served on a brioche bun which contains gluten. I'd suggest the Caesar Salad or Grilled Salmon — both are gluten-free. 🌿",
+    "ai.chat.q2": "What's popular tonight?",
+    "ai.chat.a2": "The Ribeye Steak and Wild Mushroom Pasta are our top sellers right now! The steak is great for a hearty meal, the pasta perfect if you prefer something lighter. 🍝",
+    "ai.cta": "See the demo",
 
     /* ── Testimonials ── */
     "test.kicker": "Testimonials",

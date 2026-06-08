@@ -478,6 +478,113 @@ function Features() {
   );
 }
 
+// ── AI Section ────────────────────────────────────────────────────────────────
+
+function AISection() {
+  const { t } = useLanguage();
+
+  const features = [
+    { title: "ai.f1.title", desc: "ai.f1.desc", emoji: "🌿" },
+    { title: "ai.f2.title", desc: "ai.f2.desc", emoji: "✨" },
+    { title: "ai.f3.title", desc: "ai.f3.desc", emoji: "💬" },
+  ];
+
+  const conversation = [
+    { role: "user", key: "ai.chat.q1" },
+    { role: "assistant", key: "ai.chat.a1" },
+    { role: "user", key: "ai.chat.q2" },
+    { role: "assistant", key: "ai.chat.a2" },
+  ];
+
+  return (
+    <section className="py-24 bg-slate-900 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+
+          {/* Left — copy */}
+          <div>
+            <span className="inline-flex items-center gap-2 text-[11px] font-bold tracking-widest text-blue-400 uppercase bg-blue-500/10 px-3 py-1.5 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+              {t("ai.kicker")}
+            </span>
+            <h2 className="mt-5 text-4xl font-black text-white leading-tight tracking-tight">
+              {t("ai.title")}
+            </h2>
+            <p className="mt-4 text-slate-400 leading-relaxed">
+              {t("ai.subtitle")}
+            </p>
+
+            <div className="mt-10 space-y-5">
+              {features.map((f) => (
+                <div key={f.title} className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0 text-lg">
+                    {f.emoji}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-white text-sm">{t(f.title)}</p>
+                    <p className="text-slate-400 text-sm mt-0.5">{t(f.desc)}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <Link
+              href="/demo/table/1"
+              className="inline-flex items-center gap-2 mt-10 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm px-6 py-3 rounded-xl transition-colors shadow-lg shadow-blue-600/30"
+            >
+              {t("ai.cta")} <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          {/* Right — chat mockup */}
+          <div className="relative">
+            <div className="absolute -inset-4 bg-blue-600/10 blur-3xl rounded-3xl" />
+            <div className="relative bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden shadow-2xl">
+              {/* Header */}
+              <div className="bg-blue-600 px-4 py-3 flex items-center gap-3">
+                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center text-sm">💬</div>
+                <div>
+                  <p className="text-white text-sm font-semibold">{t("chat.title")}</p>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                    <p className="text-blue-100 text-xs">{t("chat.subtitle")}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Messages */}
+              <div className="p-4 space-y-3 bg-slate-800/50">
+                {conversation.map((msg, i) => (
+                  <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                    <div className={`max-w-[85%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed ${
+                      msg.role === "user"
+                        ? "bg-blue-600 text-white rounded-br-sm"
+                        : "bg-slate-700 text-slate-100 rounded-bl-sm"
+                    }`}>
+                      {t(msg.key)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Input */}
+              <div className="px-4 py-3 border-t border-slate-700 flex gap-2 bg-slate-800">
+                <div className="flex-1 bg-slate-700 border border-slate-600 rounded-xl px-3 py-2 text-slate-400 text-sm">
+                  {t("chat.placeholder")}
+                </div>
+                <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shrink-0">
+                  <ArrowRight className="w-4 h-4 text-white" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ── Testimonials ──────────────────────────────────────────────────────────────
 
 function Testimonials() {
@@ -631,6 +738,7 @@ export default function LandingPage() {
         <HowItWorks />
         <TwoInterfaces />
         <Features />
+        <AISection />
         <Pricing />
         <Testimonials />
         <FinalCTA />
