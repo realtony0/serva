@@ -13,6 +13,7 @@ import {
   Clock,
   ChevronRight,
   Zap,
+  ChefHat,
 } from "lucide-react";
 import Link from "next/link";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
@@ -26,6 +27,7 @@ const navLinks = [
   { icon: UtensilsCrossed, label: "Menu", href: "/dashboard/menu", active: false },
   { icon: QrCode, label: "Tables & QR", href: "/dashboard/tables", active: false },
   { icon: BarChart2, label: "Commandes", href: "/dashboard/orders", active: false },
+  { icon: ChefHat, label: "Cuisine", href: "/dashboard/kitchen", active: false },
   { icon: Settings, label: "Réglages", href: "/dashboard/settings", active: false },
 ];
 

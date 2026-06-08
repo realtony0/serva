@@ -232,6 +232,12 @@ function Hero() {
               >
                 {t("hero.ctaSecondary")}
               </a>
+              <Link
+                href="/demo/table/1"
+                className="inline-flex items-center justify-center gap-2 text-blue-600 px-6 py-3.5 rounded-xl border border-blue-200 hover:bg-blue-50 hover:border-blue-300 transition-all font-medium text-sm"
+              >
+                ✨ Voir la démo
+              </Link>
             </div>
 
             <p className="mt-4 text-xs text-slate-400">{t("hero.fineprint")}</p>

@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import {
   LayoutDashboard, UtensilsCrossed, QrCode, BarChart2, Settings, LogOut, Zap,
-  Clock, X, ChevronRight,
+  Clock, X, ChevronRight, Bell, BellOff, ChefHat,
 } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
@@ -16,6 +16,7 @@ const navLinks = [
   { icon: UtensilsCrossed, label: "Menu", href: "/dashboard/menu" },
   { icon: QrCode, label: "Tables & QR", href: "/dashboard/tables" },
   { icon: BarChart2, label: "Commandes", href: "/dashboard/orders", active: true },
+  { icon: ChefHat, label: "Cuisine", href: "/dashboard/kitchen" },
   { icon: Settings, label: "Réglages", href: "/dashboard/settings" },
 ];
 
@@ -163,11 +164,31 @@ function DetailModal({ order, onClose, onStatusChange }: DetailModalProps) {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
+function playNotificationSound() {
+  try {
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = 880;
+    osc.type = "sine";
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.5);
+  } catch {
+    // ignore audio errors
+  }
+}
+
 export default function OrdersPage() {
   const [restaurantId, setRestaurantId] = useState<string | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const seenOrderIds = useRef<Set<string>>(new Set());
 
   const fetchOrders = useCallback(async (restId: string) => {
     const supabase = createClient();
@@ -179,6 +200,13 @@ export default function OrdersPage() {
       .order("created_at", { ascending: false })
       .limit(100);
     setOrders((data as Order[]) ?? []);
+  }, []);
+
+  // Request browser notification permission on mount
+  useEffect(() => {
+    if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
   }, []);
 
   useEffect(() => {
@@ -201,7 +229,28 @@ export default function OrdersPage() {
         .channel("orders-realtime")
         .on(
           "postgres_changes",
-          { event: "*", schema: "public", table: "orders", filter: `restaurant_id=eq.${restaurant.id}` },
+          { event: "INSERT", schema: "public", table: "orders", filter: `restaurant_id=eq.${restaurant.id}` },
+          (payload) => {
+            const newOrder = payload.new as Order;
+            if (!seenOrderIds.current.has(newOrder.id)) {
+              seenOrderIds.current.add(newOrder.id);
+              if (notificationsEnabled) {
+                playNotificationSound();
+                if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
+                  new Notification(`Nouvelle commande — ${newOrder.table_name ?? "Table"}`, {
+                    body: `Commande #${newOrder.id.slice(-6).toUpperCase()}`,
+                    icon: "/favicon.ico",
+                    tag: `order-${newOrder.id}`,
+                  });
+                }
+              }
+            }
+            fetchOrders(restaurant.id);
+          }
+        )
+        .on(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "orders", filter: `restaurant_id=eq.${restaurant.id}` },
           () => { fetchOrders(restaurant.id); }
         )
         .subscribe();
@@ -209,7 +258,7 @@ export default function OrdersPage() {
       return () => { supabase.removeChannel(channel); };
     }
     init();
-  }, [fetchOrders]);
+  }, [fetchOrders, notificationsEnabled]);
 
   async function changeStatus(orderId: string, status: OrderStatus) {
     const supabase = createClient();
@@ -246,12 +295,31 @@ export default function OrdersPage() {
       )}
 
       <div className="flex-1 min-w-0 flex flex-col">
-        <header className="bg-white border-b border-slate-200 px-6 py-4">
-          <h1 className="text-xl font-bold text-slate-900">Commandes</h1>
-          <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
-            <span className="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            Mis à jour en temps réel
-          </p>
+        <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold text-slate-900">Commandes</h1>
+            <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
+              <span className="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              Mis à jour en temps réel
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              const next = !notificationsEnabled;
+              setNotificationsEnabled(next);
+              if (next && typeof window !== "undefined" && "Notification" in window && Notification.permission === "default") {
+                Notification.requestPermission();
+              }
+            }}
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${
+              notificationsEnabled
+                ? "bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+                : "bg-slate-100 border-slate-200 text-slate-500 hover:bg-slate-200"
+            }`}
+          >
+            {notificationsEnabled ? <Bell className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
+            Notifications {notificationsEnabled ? "activées" : "désactivées"}
+          </button>
         </header>
 
         <div className="flex-1 overflow-x-auto p-6">

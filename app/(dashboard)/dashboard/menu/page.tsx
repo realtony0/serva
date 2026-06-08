@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import {
   LayoutDashboard, UtensilsCrossed, QrCode, BarChart2, Settings, LogOut, Zap,
-  Plus, Pencil, Trash2, ToggleLeft, ToggleRight, X, ChevronRight,
+  Plus, Pencil, Trash2, ToggleLeft, ToggleRight, X, ChevronRight, ChefHat, Upload, Link2, Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
@@ -16,6 +16,7 @@ const navLinks = [
   { icon: UtensilsCrossed, label: "Menu", href: "/dashboard/menu", active: true },
   { icon: QrCode, label: "Tables & QR", href: "/dashboard/tables" },
   { icon: BarChart2, label: "Commandes", href: "/dashboard/orders" },
+  { icon: ChefHat, label: "Cuisine", href: "/dashboard/kitchen" },
   { icon: Settings, label: "Réglages", href: "/dashboard/settings" },
 ];
 
@@ -157,6 +158,30 @@ function ItemModal({ restaurantId, categoryId, item, onClose, onSaved }: ItemMod
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [showUrlInput, setShowUrlInput] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleImageUpload(file: File) {
+    setUploadingImage(true);
+    setError(null);
+    try {
+      const supabase = createClient();
+      const path = `${restaurantId}/${Date.now()}-${file.name}`;
+      const { error: uploadErr } = await supabase.storage
+        .from("menu-images")
+        .upload(path, file, { upsert: true });
+      if (uploadErr) throw uploadErr;
+      const { data: { publicUrl } } = supabase.storage
+        .from("menu-images")
+        .getPublicUrl(path);
+      setForm((prev) => ({ ...prev, image_url: publicUrl }));
+    } catch (err: any) {
+      setError("Erreur upload: " + err.message);
+    } finally {
+      setUploadingImage(false);
+    }
+  }
 
   void EMPTY_ITEM;
 
@@ -239,12 +264,63 @@ function ItemModal({ restaurantId, categoryId, item, onClose, onSaved }: ItemMod
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">URL image</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">Image du plat</label>
+            {/* Preview */}
+            {form.image_url && (
+              <div className="relative inline-block mb-2">
+                <img
+                  src={form.image_url}
+                  alt="Aperçu"
+                  className="h-20 w-20 object-cover rounded-lg border border-slate-200"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setForm((p) => ({ ...p, image_url: "" }))}
+                  className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full w-4 h-4 text-[10px] flex items-center justify-center hover:bg-red-600"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
             <input
-              name="image_url" type="url" value={form.image_url} onChange={handleChange}
-              placeholder="https://…"
-              className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleImageUpload(file);
+              }}
             />
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadingImage}
+                className="flex items-center gap-2 px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-700 hover:bg-slate-50 disabled:opacity-50 transition-colors"
+              >
+                {uploadingImage ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" /> Téléchargement...</>
+                ) : (
+                  <><Upload className="w-4 h-4" /> Uploader une photo</>
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowUrlInput((v) => !v)}
+                className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 underline"
+              >
+                <Link2 className="w-3 h-3" /> ou entrer une URL
+              </button>
+            </div>
+            {showUrlInput && (
+              <input
+                name="image_url" type="url" value={form.image_url} onChange={handleChange}
+                placeholder="https://…"
+                className="mt-2 w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1.5">Allergènes (séparés par virgule)</label>

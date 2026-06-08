@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import {
   LayoutDashboard, UtensilsCrossed, QrCode, BarChart2, Settings, LogOut, Zap,
-  Plus, Trash2, X, ExternalLink,
+  Plus, Trash2, X, ExternalLink, ChefHat,
 } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
@@ -16,6 +16,7 @@ const navLinks = [
   { icon: UtensilsCrossed, label: "Menu", href: "/dashboard/menu" },
   { icon: QrCode, label: "Tables & QR", href: "/dashboard/tables", active: true },
   { icon: BarChart2, label: "Commandes", href: "/dashboard/orders" },
+  { icon: ChefHat, label: "Cuisine", href: "/dashboard/kitchen" },
   { icon: Settings, label: "Réglages", href: "/dashboard/settings" },
 ];
 
