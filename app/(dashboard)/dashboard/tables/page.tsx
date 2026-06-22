@@ -8,6 +8,7 @@ import {
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import type { Table, TableStatus } from "@/lib/types";
+import { Toast, useToast } from "@/components/Toast";
 
 // ── Sidebar ───────────────────────────────────────────────────────────────────
 
@@ -134,7 +135,7 @@ function AddTableModal({ restaurantId, onClose, onSaved }: AddTableModalProps) {
       position_x: null,
       position_y: null,
     });
-    if (err) { setError(err.message); setLoading(false); return; }
+    if (err) { setError("Impossible de créer la table. Réessayez."); setLoading(false); return; }
     setLoading(false);
     onSaved();
   }
@@ -186,6 +187,7 @@ export default function TablesPage() {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [qrTable, setQrTable] = useState<Table | null>(null);
+  const { toasts, addToast, dismissToast } = useToast();
 
   const fetchTables = useCallback(async (restId: string) => {
     const supabase = createClient();
@@ -219,13 +221,16 @@ export default function TablesPage() {
   async function deleteTable(id: string) {
     if (!confirm("Supprimer cette table ?")) return;
     const supabase = createClient();
-    await supabase.from("tables").delete().eq("id", id);
+    const { error } = await supabase.from("tables").delete().eq("id", id);
+    if (error) { addToast("error", "Impossible de supprimer la table."); return; }
+    addToast("success", "Table supprimée.");
     if (restaurantId) await fetchTables(restaurantId);
   }
 
   async function updateStatus(id: string, status: TableStatus) {
     const supabase = createClient();
-    await supabase.from("tables").update({ status }).eq("id", id);
+    const { error } = await supabase.from("tables").update({ status }).eq("id", id);
+    if (error) { addToast("error", "Impossible de mettre à jour le statut."); return; }
     if (restaurantId) await fetchTables(restaurantId);
   }
 
@@ -243,6 +248,7 @@ export default function TablesPage() {
   return (
     <div className="flex min-h-screen bg-slate-50">
       <Sidebar />
+      <Toast toasts={toasts} onDismiss={dismissToast} />
 
       {showAddModal && restaurantId && (
         <AddTableModal
@@ -250,6 +256,7 @@ export default function TablesPage() {
           onClose={() => setShowAddModal(false)}
           onSaved={async () => {
             setShowAddModal(false);
+            addToast("success", "Table créée avec succès.");
             if (restaurantId) await fetchTables(restaurantId);
           }}
         />

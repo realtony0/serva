@@ -4,10 +4,18 @@ import { useState } from "react";
 import Link from "next/link";
 import { Zap, Eye, EyeOff, ArrowRight, CheckCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase";
-import { useRouter } from "next/navigation";
+import { mapAuthError } from "@/lib/auth-errors";
+
+function getPasswordStrength(pw: string): { level: 0 | 1 | 2 | 3; label: string; color: string } {
+  if (pw.length === 0) return { level: 0, label: "", color: "" };
+  if (pw.length < 8) return { level: 1, label: "Weak", color: "bg-red-400" };
+  if (/[0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(pw)) {
+    return { level: 3, label: "Strong", color: "bg-green-500" };
+  }
+  return { level: 2, label: "Medium", color: "bg-yellow-400" };
+}
 
 export default function SignupPage() {
-  const router = useRouter();
   const [formData, setFormData] = useState({
     restaurantName: "",
     email: "",
@@ -22,6 +30,8 @@ export default function SignupPage() {
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
+
+  const strength = getPasswordStrength(formData.password);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -52,7 +62,7 @@ export default function SignupPage() {
     });
 
     if (authError) {
-      setError(authError.message);
+      setError(mapAuthError(authError.message, "en"));
       setLoading(false);
       return;
     }
@@ -118,6 +128,7 @@ export default function SignupPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            <fieldset disabled={loading} className="contents">
             <div>
               <label
                 htmlFor="restaurantName"
@@ -133,7 +144,7 @@ export default function SignupPage() {
                 value={formData.restaurantName}
                 onChange={handleChange}
                 placeholder="The Grand Bistro"
-                className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
+                className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow disabled:opacity-60 disabled:cursor-not-allowed"
               />
             </div>
 
@@ -153,7 +164,7 @@ export default function SignupPage() {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="you@restaurant.com"
-                className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
+                className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow disabled:opacity-60 disabled:cursor-not-allowed"
               />
             </div>
 
@@ -174,7 +185,7 @@ export default function SignupPage() {
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="At least 8 characters"
-                  className="w-full px-3 py-2.5 pr-10 text-sm border border-slate-200 rounded-lg bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
+                  className="w-full px-3 py-2.5 pr-10 text-sm border border-slate-200 rounded-lg bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow disabled:opacity-60 disabled:cursor-not-allowed"
                 />
                 <button
                   type="button"
@@ -189,6 +200,27 @@ export default function SignupPage() {
                   )}
                 </button>
               </div>
+              {/* Password strength indicator */}
+              {formData.password.length > 0 && (
+                <div className="mt-1.5">
+                  <div className="flex gap-1 mb-1">
+                    {[1, 2, 3].map((i) => (
+                      <div
+                        key={i}
+                        className={`h-1 flex-1 rounded-full transition-colors ${
+                          i <= strength.level ? strength.color : "bg-slate-200"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <p className={`text-xs ${
+                    strength.level === 1 ? "text-red-500" :
+                    strength.level === 2 ? "text-yellow-600" : "text-green-600"
+                  }`}>
+                    {strength.label}
+                  </p>
+                </div>
+              )}
             </div>
 
             <div>
@@ -207,9 +239,10 @@ export default function SignupPage() {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 placeholder="Repeat your password"
-                className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
+                className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow disabled:opacity-60 disabled:cursor-not-allowed"
               />
             </div>
+            </fieldset>
 
             <button
               type="submit"

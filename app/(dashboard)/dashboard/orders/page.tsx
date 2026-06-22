@@ -8,6 +8,7 @@ import {
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import type { Order, OrderStatus, OrderItem } from "@/lib/types";
+import { Toast, useToast } from "@/components/Toast";
 
 // ── Sidebar ───────────────────────────────────────────────────────────────────
 
@@ -189,6 +190,7 @@ export default function OrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const seenOrderIds = useRef<Set<string>>(new Set());
+  const { toasts, addToast, dismissToast } = useToast();
 
   const fetchOrders = useCallback(async (restId: string) => {
     const supabase = createClient();
@@ -210,8 +212,10 @@ export default function OrdersPage() {
   }, []);
 
   useEffect(() => {
+    const supabase = createClient();
+    let channelRef: ReturnType<typeof supabase.channel> | null = null;
+
     async function init() {
-      const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       const { data: restaurant } = await supabase
@@ -255,14 +259,20 @@ export default function OrdersPage() {
         )
         .subscribe();
 
-      return () => { supabase.removeChannel(channel); };
+      channelRef = channel;
     }
+
     init();
+
+    return () => {
+      if (channelRef) supabase.removeChannel(channelRef);
+    };
   }, [fetchOrders, notificationsEnabled]);
 
   async function changeStatus(orderId: string, status: OrderStatus) {
     const supabase = createClient();
-    await supabase.from("orders").update({ status }).eq("id", orderId);
+    const { error } = await supabase.from("orders").update({ status }).eq("id", orderId);
+    if (error) { addToast("error", "Impossible de mettre à jour la commande."); return; }
     if (restaurantId) await fetchOrders(restaurantId);
   }
 
@@ -285,6 +295,7 @@ export default function OrdersPage() {
   return (
     <div className="flex min-h-screen bg-slate-50">
       <Sidebar />
+      <Toast toasts={toasts} onDismiss={dismissToast} />
 
       {selectedOrder && (
         <DetailModal
@@ -322,6 +333,16 @@ export default function OrdersPage() {
           </button>
         </header>
 
+        {orders.length === 0 && (
+          <div className="flex-1 flex items-center justify-center p-6">
+            <div className="text-center">
+              <p className="text-slate-400 text-base mb-1">
+                Aucune commande pour l&apos;instant — les commandes apparaîtront ici en temps réel
+              </p>
+              <span className="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            </div>
+          </div>
+        )}
         <div className="flex-1 overflow-x-auto p-6">
           <div className="flex gap-4 min-w-max h-full">
             {columns.map(({ status, orders: colOrders }) => {

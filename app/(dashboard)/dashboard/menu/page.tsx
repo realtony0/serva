@@ -8,6 +8,7 @@ import {
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import type { Category, MenuItem } from "@/lib/types";
+import { Toast, useToast } from "@/components/Toast";
 
 // ── Sidebar ───────────────────────────────────────────────────────────────────
 
@@ -82,7 +83,7 @@ function CategoryModal({ restaurantId, category, onClose, onSaved }: CategoryMod
         .from("categories")
         .update({ name })
         .eq("id", category.id);
-      if (err) { setError(err.message); setLoading(false); return; }
+      if (err) { setError("Impossible de modifier la catégorie. Réessayez."); setLoading(false); return; }
     } else {
       const { error: err } = await supabase.from("categories").insert({
         restaurant_id: restaurantId,
@@ -90,7 +91,7 @@ function CategoryModal({ restaurantId, category, onClose, onSaved }: CategoryMod
         sort_order: 0,
         is_active: true,
       });
-      if (err) { setError(err.message); setLoading(false); return; }
+      if (err) { setError("Impossible de créer la catégorie. Réessayez."); setLoading(false); return; }
     }
     setLoading(false);
     onSaved();
@@ -176,8 +177,8 @@ function ItemModal({ restaurantId, categoryId, item, onClose, onSaved }: ItemMod
         .from("menu-images")
         .getPublicUrl(path);
       setForm((prev) => ({ ...prev, image_url: publicUrl }));
-    } catch (err: any) {
-      setError("Erreur upload: " + err.message);
+    } catch {
+      setError("Impossible de télécharger l'image. Vérifiez le format et réessayez.");
     } finally {
       setUploadingImage(false);
     }
@@ -217,10 +218,10 @@ function ItemModal({ restaurantId, categoryId, item, onClose, onSaved }: ItemMod
     };
     if (item) {
       const { error: err } = await supabase.from("menu_items").update(payload).eq("id", item.id);
-      if (err) { setError(err.message); setLoading(false); return; }
+      if (err) { setError("Impossible de modifier l'article. Réessayez."); setLoading(false); return; }
     } else {
       const { error: err } = await supabase.from("menu_items").insert(payload);
-      if (err) { setError(err.message); setLoading(false); return; }
+      if (err) { setError("Impossible de créer l'article. Réessayez."); setLoading(false); return; }
     }
     setLoading(false);
     onSaved();
@@ -368,6 +369,7 @@ export default function MenuPage() {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [showItemModal, setShowItemModal] = useState(false);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
+  const { toasts, addToast, dismissToast } = useToast();
 
   const fetchCategories = useCallback(async (restId: string) => {
     const supabase = createClient();
@@ -421,7 +423,9 @@ export default function MenuPage() {
   async function deleteCategory(cat: Category) {
     if (!confirm(`Supprimer la catégorie "${cat.name}" ?`)) return;
     const supabase = createClient();
-    await supabase.from("categories").delete().eq("id", cat.id);
+    const { error } = await supabase.from("categories").delete().eq("id", cat.id);
+    if (error) { addToast("error", "Impossible de supprimer la catégorie."); return; }
+    addToast("success", `Catégorie "${cat.name}" supprimée.`);
     if (restaurantId) await fetchCategories(restaurantId);
     if (selectedCategory?.id === cat.id) setSelectedCategory(null);
   }
@@ -429,13 +433,16 @@ export default function MenuPage() {
   async function deleteItem(itemId: string) {
     if (!confirm("Supprimer cet article ?")) return;
     const supabase = createClient();
-    await supabase.from("menu_items").delete().eq("id", itemId);
+    const { error } = await supabase.from("menu_items").delete().eq("id", itemId);
+    if (error) { addToast("error", "Impossible de supprimer l'article."); return; }
+    addToast("success", "Article supprimé.");
     if (selectedCategory) await fetchItems(selectedCategory.id);
   }
 
   async function toggleItem(item: MenuItem) {
     const supabase = createClient();
-    await supabase.from("menu_items").update({ is_available: !item.is_available }).eq("id", item.id);
+    const { error } = await supabase.from("menu_items").update({ is_available: !item.is_available }).eq("id", item.id);
+    if (error) { addToast("error", "Impossible de modifier la disponibilité."); return; }
     if (selectedCategory) await fetchItems(selectedCategory.id);
   }
 
@@ -453,6 +460,7 @@ export default function MenuPage() {
   return (
     <div className="flex min-h-screen bg-slate-50">
       <Sidebar />
+      <Toast toasts={toasts} onDismiss={dismissToast} />
 
       {/* Category modal */}
       {showCategoryModal && restaurantId && (
@@ -463,6 +471,7 @@ export default function MenuPage() {
           onSaved={async () => {
             setShowCategoryModal(false);
             setEditingCategory(null);
+            addToast("success", editingCategory ? "Catégorie modifiée." : "Catégorie créée.");
             if (restaurantId) await fetchCategories(restaurantId);
           }}
         />
@@ -477,6 +486,7 @@ export default function MenuPage() {
           onClose={() => { setShowItemModal(false); setEditingItem(null); }}
           onSaved={async () => {
             setShowItemModal(false);
+            addToast("success", editingItem ? "Article modifié." : "Article ajouté.");
             setEditingItem(null);
             if (selectedCategory) await fetchItems(selectedCategory.id);
           }}

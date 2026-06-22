@@ -18,12 +18,20 @@ interface Props {
 
 function slugify(text: string) {
   return text
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "") // remove accents
     .toLowerCase()
     .trim()
-    .replace(/[^\w\s-]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
     .replace(/[\s_-]+/g, "-")
     .replace(/^-+|-+$/g, "");
 }
+
+function randomSuffix(): string {
+  return String(Math.floor(1000 + Math.random() * 9000));
+}
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "serva.app";
 
 export default function OnboardingForm({ userId }: Props) {
   const router = useRouter();
@@ -36,6 +44,8 @@ export default function OnboardingForm({ userId }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   const currency = COUNTRY_CURRENCIES[form.country] ?? "CAD";
+  const previewSlug = slugify(form.name) || "mon-restaurant";
+  const siteDisplay = SITE_URL.replace(/^https?:\/\//, "");
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -43,15 +53,9 @@ export default function OnboardingForm({ userId }: Props) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-
+  async function tryInsert(slug: string) {
     const supabase = createClient();
-    const slug = slugify(form.name);
-
-    const { error: insertError } = await supabase.from("restaurants").insert({
+    return supabase.from("restaurants").insert({
       name: form.name,
       slug,
       city: form.city,
@@ -61,11 +65,43 @@ export default function OnboardingForm({ userId }: Props) {
       is_active: true,
       plan: "starter",
     });
+  }
 
-    if (insertError) {
-      setError(insertError.message);
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    const slug = slugify(form.name);
+
+    if (!slug) {
+      setError("Le nom du restaurant doit contenir des caractères valides.");
       setLoading(false);
       return;
+    }
+
+    const { error: insertError } = await tryInsert(slug);
+
+    if (insertError) {
+      // Slug conflict — try with random suffix once
+      const isConflict =
+        insertError.message.includes("duplicate") ||
+        insertError.message.includes("unique") ||
+        insertError.code === "23505";
+
+      if (isConflict) {
+        const slugWithSuffix = `${slug}-${randomSuffix()}`;
+        const { error: retryError } = await tryInsert(slugWithSuffix);
+        if (retryError) {
+          setError("Impossible de créer le restaurant. Réessayez.");
+          setLoading(false);
+          return;
+        }
+      } else {
+        setError("Une erreur est survenue lors de la création. Réessayez.");
+        setLoading(false);
+        return;
+      }
     }
 
     router.push("/dashboard");
@@ -113,6 +149,15 @@ export default function OnboardingForm({ userId }: Props) {
             placeholder="Le Grand Bistro"
             className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
+          {/* Live URL preview */}
+          {form.name.length > 0 && (
+            <p className="mt-1.5 text-xs text-slate-400">
+              Votre lien :{" "}
+              <span className="font-mono">
+                {siteDisplay}/{previewSlug}/table/1
+              </span>
+            </p>
+          )}
         </div>
 
         <div>

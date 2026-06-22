@@ -192,8 +192,10 @@ export default function KitchenPage() {
   }, []);
 
   useEffect(() => {
+    const supabase = createClient();
+    let channelRef: ReturnType<typeof supabase.channel> | null = null;
+
     async function init() {
-      const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       const { data: restaurant } = await supabase
@@ -234,9 +236,14 @@ export default function KitchenPage() {
         )
         .subscribe();
 
-      return () => { supabase.removeChannel(channel); };
+      channelRef = channel;
     }
+
     init();
+
+    return () => {
+      if (channelRef) supabase.removeChannel(channelRef);
+    };
   }, [fetchOrders]);
 
   async function markReady(orderId: string) {
@@ -292,9 +299,9 @@ export default function KitchenPage() {
           ) : orders.length === 0 ? (
             <div className="flex items-center justify-center h-full min-h-[60vh]">
               <div className="text-center">
-                <div className="text-7xl mb-4">✅</div>
-                <p className="text-3xl font-bold text-gray-400">Aucune commande active</p>
-                <p className="text-gray-600 mt-2 text-lg">La cuisine est à jour !</p>
+                <div className="text-7xl mb-4">🍳</div>
+                <p className="text-3xl font-bold text-gray-400">Cuisine au calme</p>
+                <p className="text-gray-600 mt-2 text-lg">Les nouvelles commandes apparaîtront ici</p>
               </div>
             </div>
           ) : (

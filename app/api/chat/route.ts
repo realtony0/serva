@@ -1,7 +1,11 @@
 import Groq from "groq-sdk";
 import { NextRequest, NextResponse } from "next/server";
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+function getGroqClient() {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) throw new Error("GROQ_API_KEY is not configured.");
+  return new Groq({ apiKey });
+}
 
 type Message = { role: "user" | "assistant"; content: string };
 
@@ -36,6 +40,7 @@ export async function POST(req: NextRequest) {
     // Keep only last 4 messages to save tokens
     const trimmedMessages = messages.slice(-4);
 
+    const groq = getGroqClient();
     const completion = await groq.chat.completions.create({
       model: "llama-3.1-8b-instant",
       messages: [
